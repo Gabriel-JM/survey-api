@@ -1,4 +1,4 @@
-import { InvalidParamError, MissingParamError, ServerError } from '../errors'
+import { InvalidParamError, MissingParamError, ServerError } from '../../errors'
 import { SignUpController } from './signup'
 
 const makeSut = () => {

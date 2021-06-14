@@ -6,11 +6,21 @@ const makeSut = () => {
     isValid: jest.fn(() => true)
   }
 
-  const sut = new SignUpController(emailValidatorStub)
+  const addAccountStub = {
+    add: jest.fn(() => ({
+      id: 'valid_id',
+      name: 'any_name',
+      email: 'valid_email@mail.com',
+      password: 'valid_password'
+    }))
+  }
+
+  const sut = new SignUpController(emailValidatorStub, addAccountStub)
 
   return {
     sut,
-    emailValidatorStub
+    emailValidatorStub,
+    addAccountStub
   }
 }
 
@@ -142,5 +152,24 @@ describe('SignUp Controller', () => {
     const httpResponse = sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  it('should call AddAccount with correct values', () => {
+    const { sut, addAccountStub } = makeSut()
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    }
+
+    sut.handle(httpRequest)
+    expect(addAccountStub.add).toHaveBeenCalledWith({
+      name: 'any_name',
+      email: 'any_email@mail.com',
+      password: 'any_password'
+    })
   })
 })

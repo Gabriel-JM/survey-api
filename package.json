@@ -5,8 +5,11 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "jest --passWithNoTests --watch",
-    "test:staged": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests --runInBand",
+    "test:unit": "npm test -- --watch -c jest-unit.config.ts",
+    "test:int": "npm test -- --watch -c jest-integration.config.ts",
+    "test:staged": "npm test -- --findRelatedTests --silent",
+    "test:ci": "npm test -- --coverage --silent"
   },
   "repository": {
     "type": "git",

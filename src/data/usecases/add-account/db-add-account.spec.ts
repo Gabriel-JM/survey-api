@@ -14,16 +14,24 @@ function makeSut () {
 }
 
 describe('DbAddAccount Use Case', () => {
+  const account = {
+    name: 'any_name',
+    email: 'any_email@mail.com',
+    password: 'any_password'
+  }
+
   it('should call Encrypter with correct password', async () => {
     const { sut, encrypterStub } = makeSut()
-    const account = {
-      name: 'any_name',
-      email: 'any_email@mail.com',
-      password: 'any_password'
-    }
 
     await sut.add(account)
 
     expect(encrypterStub.encrypt).toHaveBeenCalledWith(account.password)
+  })
+
+  it('should throw if Encrypter throws', async () => {
+    const { sut, encrypterStub } = makeSut()
+    encrypterStub.encrypt.mockRejectedValueOnce(new Error())
+
+    await expect(sut.add(account)).rejects.toThrow()
   })
 })

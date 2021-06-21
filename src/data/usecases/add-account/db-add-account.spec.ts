@@ -4,12 +4,21 @@ function makeSut () {
   const encrypterStub = {
     encrypt: jest.fn(async () => await Promise.resolve('hashed_password'))
   }
+  const addAccountRepositoryStub = {
+    add: jest.fn(async () => await Promise.resolve({
+      id: 'valid_id',
+      name: 'any_name',
+      email: 'any_email@mail.com',
+      password: 'hashed_password'
+    }))
+  }
 
-  const sut = new DbAddAccountUseCase(encrypterStub)
+  const sut = new DbAddAccountUseCase(encrypterStub, addAccountRepositoryStub)
 
   return {
     sut,
-    encrypterStub
+    encrypterStub,
+    addAccountRepositoryStub
   }
 }
 
@@ -33,5 +42,16 @@ describe('DbAddAccount Use Case', () => {
     encrypterStub.encrypt.mockRejectedValueOnce(new Error())
 
     await expect(sut.add(account)).rejects.toThrow()
+  })
+
+  it('should call AddAccountRepository with correct values', async () => {
+    const { sut, addAccountRepositoryStub } = makeSut()
+
+    await sut.add(account)
+
+    expect(addAccountRepositoryStub.add).toHaveBeenCalledWith({
+      ...account,
+      password: 'hashed_password'
+    })
   })
 })

@@ -7,8 +7,8 @@ function makeSut () {
   const addAccountRepositoryStub = {
     add: jest.fn(async () => await Promise.resolve({
       id: 'valid_id',
-      name: 'any_name',
-      email: 'any_email@mail.com',
+      name: 'valid_name',
+      email: 'valid_email@mail.com',
       password: 'hashed_password'
     }))
   }
@@ -24,8 +24,8 @@ function makeSut () {
 
 describe('DbAddAccount Use Case', () => {
   const account = {
-    name: 'any_name',
-    email: 'any_email@mail.com',
+    name: 'valid_name',
+    email: 'valid_email@mail.com',
     password: 'any_password'
   }
 
@@ -60,5 +60,18 @@ describe('DbAddAccount Use Case', () => {
     addAccountRepositoryStub.add.mockRejectedValueOnce(new Error())
 
     await expect(sut.add(account)).rejects.toThrow()
+  })
+
+  it('should return an account on success', async () => {
+    const { sut } = makeSut()
+
+    const result = await sut.add(account)
+
+    expect(result).toEqual({
+      id: 'valid_id',
+      name: 'valid_name',
+      email: 'valid_email@mail.com',
+      password: 'hashed_password'
+    })
   })
 })

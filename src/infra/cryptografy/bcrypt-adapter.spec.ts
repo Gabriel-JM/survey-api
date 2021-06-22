@@ -21,4 +21,11 @@ describe('Bcrypt Adapter', () => {
 
     expect(hash).toBe('hashed_value')
   })
+
+  it('should throws if bcrypt throws', async () => {
+    const sut = new BcryptAdapter(salt)
+    hashSpy.mockImplementationOnce(() => { throw new Error() })
+
+    await expect(sut.encrypt('any_value')).rejects.toThrow()
+  })
 })

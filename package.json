@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/Gabriel-JM/survey-api#readme",
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/jest": "^26.0.23",
     "@types/node": "^15.12.1",
     "@types/validator": "^13.1.4",
@@ -41,6 +42,7 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "validator": "^13.6.0"
   }
 }

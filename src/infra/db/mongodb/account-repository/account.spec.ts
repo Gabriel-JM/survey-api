@@ -29,7 +29,14 @@ jest.mock('../helpers/mongo-helper', () => {
 
     getCollection: jest.fn(() => {
       return collectionStub('accounts')
-    })
+    }),
+
+    map: jest.fn(() => ({
+      id: 'valid_id',
+      name: 'any_name',
+      email: 'any_email@mail.com',
+      password: 'any_password'
+    }))
   }
 
   return {

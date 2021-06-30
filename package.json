@@ -10,7 +10,7 @@
     "test": "jest --passWithNoTests --runInBand",
     "test:unit": "npm test -- --watch -c jest-unit.config.ts",
     "test:int": "npm test -- --watch -c jest-integration.config.ts",
-    "test:staged": "npm test -- --findRelatedTests --silent",
+    "test:staged": "npm test -- --findRelatedTests",
     "test:ci": "npm test -- --coverage --silent"
   },
   "repository": {
@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/Gabriel-JM/survey-api#readme",
   "devDependencies": {
+    "@shelf/jest-mongodb": "^1.2.1",
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.12",
     "@types/jest": "^26.0.23",

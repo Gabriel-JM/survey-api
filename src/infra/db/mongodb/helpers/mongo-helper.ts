@@ -4,7 +4,7 @@ export const MongoHelper = {
   client: {} as MongoClient,
 
   async connect (uri: string) {
-    this.client = new MongoClient(uri, {
+    this.client = await MongoClient.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     })
@@ -15,7 +15,7 @@ export const MongoHelper = {
   },
 
   getCollection (name: string): Collection {
-    return this.client.isConnected() && this.client.db().collection(name)
+    return this.client.db().collection(name)
   },
 
   map <T = any>(data: any) {

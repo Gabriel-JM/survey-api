@@ -27,8 +27,8 @@ jest.mock('../helpers/mongo-helper', () => {
 
     connect: jest.fn(),
 
-    getCollection: jest.fn(() => {
-      return collectionStub('accounts')
+    getCollection: jest.fn(async () => {
+      return await Promise.resolve(collectionStub('accounts'))
     }),
 
     map: jest.fn(() => ({

@@ -1,3 +1,4 @@
+import { serverError } from '../../presentation/helpers/http-helper'
 import { LogControllerDecorator } from './log'
 
 const httpResponseFixture = {
@@ -14,11 +15,16 @@ function makeSut () {
     })
   }
 
-  const sut = new LogControllerDecorator(controllerStub)
+  const logErrorRepositoryStub = {
+    log: jest.fn()
+  }
+
+  const sut = new LogControllerDecorator(controllerStub, logErrorRepositoryStub)
 
   return {
     sut,
-    controllerStub
+    controllerStub,
+    logErrorRepositoryStub
   }
 }
 
@@ -44,5 +50,17 @@ describe('Log Decorator', () => {
     const response = await sut.handle(httpRequest)
 
     expect(response).toEqual(httpResponseFixture)
+  })
+
+  it('should call LogErrorRepository with correct error if controller returns a server error', async () => {
+    const { sut, controllerStub, logErrorRepositoryStub } = makeSut()
+    const fakeError = new Error()
+    fakeError.stack = 'any_stack'
+
+    controllerStub.handle.mockResolvedValueOnce(serverError(fakeError))
+
+    await sut.handle(httpRequest)
+
+    expect(logErrorRepositoryStub.log).toHaveBeenCalledWith('any_stack')
   })
 })

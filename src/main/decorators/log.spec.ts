@@ -38,4 +38,11 @@ describe('Log Decorator', () => {
 
     expect(controllerStub.handle).toHaveBeenCalledWith(httpRequest)
   })
+
+  it('should return the same result of the controller', async () => {
+    const { sut } = makeSut()
+    const response = await sut.handle(httpRequest)
+
+    expect(response).toEqual(httpResponseFixture)
+  })
 })

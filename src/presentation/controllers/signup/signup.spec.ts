@@ -132,7 +132,7 @@ describe('SignUp Controller', () => {
     emailValidatorStub.isValid.mockImplementationOnce(() => { throw new Error() })
 
     const httpResponse = await sut.handle(httpRequest)
-    expect(httpResponse).toEqual(serverError(new ServerError('')))
+    expect(httpResponse).toEqual(serverError({} as Error))
   })
 
   it('should call AddAccount with correct values', async () => {

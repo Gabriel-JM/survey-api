@@ -1,16 +1,18 @@
 import { DbAddAccountUseCase } from './db-add-account'
 
+const validAccount = {
+  id: 'valid_id',
+  name: 'valid_name',
+  email: 'valid_email@mail.com',
+  password: 'hashed_password'
+}
+
 function makeSut () {
   const encrypterStub = {
     encrypt: jest.fn(async () => await Promise.resolve('hashed_password'))
   }
   const addAccountRepositoryStub = {
-    add: jest.fn(async () => await Promise.resolve({
-      id: 'valid_id',
-      name: 'valid_name',
-      email: 'valid_email@mail.com',
-      password: 'hashed_password'
-    }))
+    add: jest.fn(async () => await Promise.resolve(validAccount))
   }
 
   const sut = new DbAddAccountUseCase(encrypterStub, addAccountRepositoryStub)
@@ -67,11 +69,6 @@ describe('DbAddAccount Use Case', () => {
 
     const result = await sut.add(account)
 
-    expect(result).toEqual({
-      id: 'valid_id',
-      name: 'valid_name',
-      email: 'valid_email@mail.com',
-      password: 'hashed_password'
-    })
+    expect(result).toEqual(validAccount)
   })
 })

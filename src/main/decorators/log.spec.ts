@@ -16,7 +16,7 @@ function makeSut () {
   }
 
   const logErrorRepositoryStub = {
-    log: jest.fn()
+    logError: jest.fn()
   }
 
   const sut = new LogControllerDecorator(controllerStub, logErrorRepositoryStub)
@@ -61,6 +61,6 @@ describe('Log Decorator', () => {
 
     await sut.handle(httpRequest)
 
-    expect(logErrorRepositoryStub.log).toHaveBeenCalledWith('any_stack')
+    expect(logErrorRepositoryStub.logError).toHaveBeenCalledWith('any_stack')
   })
 })

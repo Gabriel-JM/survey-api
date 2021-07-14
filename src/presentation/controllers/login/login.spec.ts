@@ -29,4 +29,16 @@ describe('', () => {
 
     expect(httpResponse).toEqual(badRequest(new MissingParamError('email')))
   })
+
+  it('should return 400 if no password is provided', async () => {
+    const { sut } = makeSut()
+
+    const httpResponse = await sut.handle({
+      body: {
+        email: 'any_email@mail.com'
+      }
+    })
+
+    expect(httpResponse).toEqual(badRequest(new MissingParamError('password')))
+  })
 })

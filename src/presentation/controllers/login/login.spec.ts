@@ -1,4 +1,4 @@
-import { MissingParamError } from '../../errors'
+import { InvalidParamError, MissingParamError } from '../../errors'
 import { badRequest } from '../../helpers/http-helper'
 import { LoginController } from './login'
 
@@ -53,5 +53,14 @@ describe('', () => {
     await sut.handle(httpRequest)
 
     expect(emailValidatorStub.isValid).toHaveBeenCalledWith(httpRequest.body.email)
+  })
+
+  it('should return 400 if the provided email is invalid', async () => {
+    const { sut, emailValidatorStub } = makeSut()
+    emailValidatorStub.isValid.mockReturnValueOnce(false)
+
+    const httpResponse = await sut.handle(httpRequest)
+
+    expect(httpResponse).toEqual(badRequest(new InvalidParamError('email')))
   })
 })

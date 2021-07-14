@@ -3,20 +3,25 @@ import { badRequest } from '../../helpers/http-helper'
 import { LoginController } from './login'
 
 function makeSut () {
-  const sut = new LoginController()
+  const emailValidatorStub = {
+    isValid: jest.fn(() => true)
+  }
+
+  const sut = new LoginController(emailValidatorStub)
 
   return {
-    sut
+    sut,
+    emailValidatorStub
   }
 }
 
 describe('', () => {
-  // const httpRequest = {
-  //   body: {
-  //     email: 'any_email@mail.com',
-  //     password: 'any_password'
-  //   }
-  // }
+  const httpRequest = {
+    body: {
+      email: 'any_email@mail.com',
+      password: 'any_password'
+    }
+  }
 
   it('should return 400 if no email is provided', async () => {
     const { sut } = makeSut()
@@ -40,5 +45,13 @@ describe('', () => {
     })
 
     expect(httpResponse).toEqual(badRequest(new MissingParamError('password')))
+  })
+
+  it('shoudl call EmailValidator with correct value', async () => {
+    const { sut, emailValidatorStub } = makeSut()
+
+    await sut.handle(httpRequest)
+
+    expect(emailValidatorStub.isValid).toHaveBeenCalledWith(httpRequest.body.email)
   })
 })

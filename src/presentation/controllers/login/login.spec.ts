@@ -7,11 +7,16 @@ function makeSut () {
     isValid: jest.fn(() => true)
   }
 
-  const sut = new LoginController(emailValidatorStub)
+  const authenticationStub = {
+    auth: jest.fn(async () => await Promise.resolve('any_access_token'))
+  }
+
+  const sut = new LoginController(emailValidatorStub, authenticationStub)
 
   return {
     sut,
-    emailValidatorStub
+    emailValidatorStub,
+    authenticationStub
   }
 }
 
@@ -73,5 +78,16 @@ describe('', () => {
     const httpResponse = await sut.handle(httpRequest)
 
     expect(httpResponse).toEqual(serverError(new Error()))
+  })
+
+  it('shoudl call Authentication with correct values', async () => {
+    const { sut, authenticationStub } = makeSut()
+
+    await sut.handle(httpRequest)
+
+    expect(authenticationStub.auth).toHaveBeenCalledWith(
+      httpRequest.body.email,
+      httpRequest.body.password
+    )
   })
 })

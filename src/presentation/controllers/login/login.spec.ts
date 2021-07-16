@@ -101,4 +101,13 @@ describe('', () => {
 
     expect(httpResponse).toEqual(unauthorized())
   })
+
+  it('should return 500 if Authentication throws', async () => {
+    const { sut, authenticationStub } = makeSut()
+    authenticationStub.auth.mockRejectedValueOnce(new Error())
+
+    const httpResponse = await sut.handle(httpRequest)
+
+    expect(httpResponse).toEqual(serverError(new Error()))
+  })
 })

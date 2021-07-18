@@ -44,19 +44,6 @@ describe('SignUp Controller', () => {
     }
   }
 
-  it('should return 400 if password is different than password confirmation', async () => {
-    const { sut } = makeSut()
-    const request = {
-      body: {
-        ...httpRequest.body,
-        passwordConfirmation: 'invalid_password'
-      }
-    }
-
-    const httpResponse = await sut.handle(request)
-    expect(httpResponse).toEqual(badRequest(new InvalidParamError('passwordConfirmation')))
-  })
-
   it('should return 400 if an invalid email is provided', async () => {
     const { sut, emailValidatorStub } = makeSut()
     emailValidatorStub.isValid.mockReturnValueOnce(false)

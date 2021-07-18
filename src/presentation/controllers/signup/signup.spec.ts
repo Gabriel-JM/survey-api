@@ -17,7 +17,7 @@ const makeSut = () => {
   }
 
   const validationStub = {
-    validate: jest.fn(() => null)
+    validate: jest.fn(() => null) as jest.Mock<Error | null>
   }
 
   const sut = new SignUpController(
@@ -181,5 +181,13 @@ describe('SignUp Controller', () => {
     await sut.handle(httpRequest)
 
     expect(validationStub.validate).toHaveBeenCalledWith(httpRequest.body)
+  })
+
+  it('should return 400 if Validation returns an error', async () => {
+    const { sut, validationStub } = makeSut()
+    validationStub.validate.mockReturnValueOnce(new MissingParamError('any_field'))
+
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(badRequest(new MissingParamError('any_field')))
   })
 })

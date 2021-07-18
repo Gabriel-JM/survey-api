@@ -16,12 +16,21 @@ const makeSut = () => {
     }))
   }
 
-  const sut = new SignUpController(emailValidatorStub, addAccountStub)
+  const validationStub = {
+    validate: jest.fn(() => null)
+  }
+
+  const sut = new SignUpController(
+    emailValidatorStub,
+    addAccountStub,
+    validationStub
+  )
 
   return {
     sut,
     emailValidatorStub,
-    addAccountStub
+    addAccountStub,
+    validationStub
   }
 }
 
@@ -164,5 +173,13 @@ describe('SignUp Controller', () => {
       email: 'valid_email@mail.com',
       password: 'valid_password'
     }))
+  })
+
+  it('shoudl call Validation with correct value', async () => {
+    const { sut, validationStub } = makeSut()
+
+    await sut.handle(httpRequest)
+
+    expect(validationStub.validate).toHaveBeenCalledWith(httpRequest.body)
   })
 })

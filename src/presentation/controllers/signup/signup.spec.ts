@@ -17,7 +17,7 @@ const makeSut = () => {
   }
 
   const validationStub = {
-    validate: jest.fn(() => null) as jest.Mock<Error | null>
+    validate: jest.fn(() => undefined) as jest.Mock<Error | undefined>
   }
 
   const sut = new SignUpController(

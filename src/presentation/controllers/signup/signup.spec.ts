@@ -1,12 +1,8 @@
-import { InvalidParamError, MissingParamError, ServerError } from '../../errors'
+import { MissingParamError, ServerError } from '../../errors'
 import { badRequest, ok, serverError } from '../../helpers/http-helper'
 import { SignUpController } from './signup'
 
 const makeSut = () => {
-  const emailValidatorStub = {
-    isValid: jest.fn(() => true)
-  }
-
   const addAccountStub = {
     add: jest.fn(async () => await Promise.resolve({
       id: 'valid_id',
@@ -21,14 +17,12 @@ const makeSut = () => {
   }
 
   const sut = new SignUpController(
-    emailValidatorStub,
     addAccountStub,
     validationStub
   )
 
   return {
     sut,
-    emailValidatorStub,
     addAccountStub,
     validationStub
   }
@@ -43,37 +37,6 @@ describe('SignUp Controller', () => {
       passwordConfirmation: 'any_password'
     }
   }
-
-  it('should return 400 if an invalid email is provided', async () => {
-    const { sut, emailValidatorStub } = makeSut()
-    emailValidatorStub.isValid.mockReturnValueOnce(false)
-
-    const request = {
-      body: {
-        ...httpRequest.body,
-        email: 'invalid_email'
-      }
-    }
-
-    const httpResponse = await sut.handle(request)
-    expect(httpResponse).toEqual(badRequest(new InvalidParamError('email')))
-  })
-
-  it('should call EmailValidator with correct email', async () => {
-    const { sut, emailValidatorStub } = makeSut()
-    emailValidatorStub.isValid.mockReturnValueOnce(false)
-
-    await sut.handle(httpRequest)
-    expect(emailValidatorStub.isValid).toHaveBeenCalledWith(httpRequest.body.email)
-  })
-
-  it('should return 500 if EmailValidator throws', async () => {
-    const { sut, emailValidatorStub } = makeSut()
-    emailValidatorStub.isValid.mockImplementationOnce(() => { throw new Error() })
-
-    const httpResponse = await sut.handle(httpRequest)
-    expect(httpResponse).toEqual(serverError({} as Error))
-  })
 
   it('should call AddAccount with correct values', async () => {
     const { sut, addAccountStub } = makeSut()

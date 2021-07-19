@@ -38,4 +38,12 @@ describe('', () => {
 
     expect(error).toEqual(new MissingParamError('field'))
   })
+
+  it('should return undefined if neither validations fails', () => {
+    const { sut } = makeSut()
+
+    const error = sut.validate({ field: 'any_value' })
+
+    expect(error).toBeUndefined()
+  })
 })

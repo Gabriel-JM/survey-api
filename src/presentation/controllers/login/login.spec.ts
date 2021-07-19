@@ -51,11 +51,13 @@ describe('', () => {
 
   it('should return 500 if Authentication throws', async () => {
     const { sut, authenticationStub } = makeSut()
-    authenticationStub.auth.mockRejectedValueOnce(new Error())
+    const error = new Error()
+    error.stack = undefined
+    authenticationStub.auth.mockRejectedValueOnce(error)
 
     const httpResponse = await sut.handle(httpRequest)
 
-    expect(httpResponse).toEqual(serverError(new Error()))
+    expect(httpResponse).toEqual(serverError(error))
   })
 
   it('should return 200 if valid credentials are provided', async () => {

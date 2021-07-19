@@ -36,8 +36,7 @@ describe('', () => {
     await sut.handle(httpRequest)
 
     expect(authenticationStub.auth).toHaveBeenCalledWith(
-      httpRequest.body.email,
-      httpRequest.body.password
+      { ...httpRequest.body }
     )
   })
 

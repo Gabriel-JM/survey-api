@@ -34,4 +34,15 @@ describe('Database Authentication use case', () => {
     expect(loadAccountByEmailRepositoryStub.load)
       .toHaveBeenCalledWith(authModel.email)
   })
+
+  it('should throw if LoadAccountByEmailRepository throws', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
+    loadAccountByEmailRepositoryStub.load.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const promise = sut.auth(authModel)
+
+    await expect(promise).rejects.toThrowError(Error)
+  })
 })

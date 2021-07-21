@@ -5,7 +5,7 @@ const accountModelFake = <AccountModel> {
   id: 'any_id',
   name: 'any_name',
   email: 'any_email@mail.com',
-  password: 'any_password'
+  password: 'hashed_password'
 }
 
 function makeSut () {
@@ -15,11 +15,19 @@ function makeSut () {
     ) as jest.Mock<Promise<AccountModel| null>>
   }
 
-  const sut = new DbAuthenticationUseCase(loadAccountByEmailRepositoryStub)
+  const hashComparerStub = {
+    compare: jest.fn(() => Promise.resolve(true))
+  }
+
+  const sut = new DbAuthenticationUseCase(
+    loadAccountByEmailRepositoryStub,
+    hashComparerStub
+  )
 
   return {
     sut,
-    loadAccountByEmailRepositoryStub
+    loadAccountByEmailRepositoryStub,
+    hashComparerStub
   }
 }
 
@@ -56,5 +64,14 @@ describe('Database Authentication use case', () => {
     const accessToken = await sut.auth(authModel)
 
     expect(accessToken).toBeNull()
+  })
+
+  it('should call HashComparer with correct values', async () => {
+    const { sut, hashComparerStub } = makeSut()
+
+    await sut.auth(authModel)
+
+    expect(hashComparerStub.compare)
+      .toHaveBeenCalledWith(authModel.password, accountModelFake.password)
   })
 })

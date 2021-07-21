@@ -1,6 +1,7 @@
+import { AccountModel } from '../../../domain/models/account'
 import { DbAuthenticationUseCase } from './db-authentication'
 
-const accountModelFake = {
+const accountModelFake = <AccountModel> {
   id: 'any_id',
   name: 'any_name',
   email: 'any_email@mail.com',
@@ -9,7 +10,9 @@ const accountModelFake = {
 
 function makeSut () {
   const loadAccountByEmailRepositoryStub = {
-    load: jest.fn(() => Promise.resolve(accountModelFake))
+    load: jest.fn(
+      () => Promise.resolve(accountModelFake)
+    ) as jest.Mock<Promise<AccountModel| null>>
   }
 
   const sut = new DbAuthenticationUseCase(loadAccountByEmailRepositoryStub)
@@ -44,5 +47,14 @@ describe('Database Authentication use case', () => {
     const promise = sut.auth(authModel)
 
     await expect(promise).rejects.toThrowError(Error)
+  })
+
+  it('should return null if LoadAccountByEmailRepository returns null', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
+    loadAccountByEmailRepositoryStub.load.mockResolvedValueOnce(null)
+
+    const accessToken = await sut.auth(authModel)
+
+    expect(accessToken).toBeNull()
   })
 })

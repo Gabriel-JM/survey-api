@@ -8,6 +8,6 @@ export class DbAuthenticationUseCase implements Authentication {
 
   async auth (credentials: AuthenticationModel): Promise<string | null> {
     await this.loadAccountByEmailRepository.load(credentials.email)
-    return ''
+    return null
   }
 }

@@ -106,4 +106,13 @@ describe('Database Authentication use case', () => {
 
     expect(tokenGeneratorStub.generate).toHaveBeenCalledWith(accountModelFake.id)
   })
+
+  it('should throw if TokenGenerator throws', async () => {
+    const { sut, tokenGeneratorStub } = makeSut()
+    tokenGeneratorStub.generate.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    await expect(sut.auth(authModel)).rejects.toThrowError(Error)
+  })
 })

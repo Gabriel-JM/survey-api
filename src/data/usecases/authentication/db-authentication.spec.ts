@@ -83,4 +83,13 @@ describe('Database Authentication use case', () => {
 
     await expect(sut.auth(authModel)).rejects.toThrowError(Error)
   })
+
+  it('should return null if HashComparer returns false', async () => {
+    const { sut, hashComparerStub } = makeSut()
+    hashComparerStub.compare.mockResolvedValueOnce(false)
+
+    const accessToken = await sut.auth(authModel)
+
+    expect(accessToken).toBeNull()
+  })
 })

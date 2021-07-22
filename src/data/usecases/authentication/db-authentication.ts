@@ -15,9 +15,14 @@ export class DbAuthenticationUseCase implements Authentication {
 
     if (!account) return null
 
-    await this.hashComparer.compare(credentials.password, account.password)
+    const isEqual = await this.hashComparer.compare(
+      credentials.password,
+      account.password
+    )
 
-    await this.tokenGenerator.generate(account.id)
-    return null
+    if (!isEqual) return null
+
+    const accessToken = await this.tokenGenerator.generate(account.id)
+    return accessToken
   }
 }

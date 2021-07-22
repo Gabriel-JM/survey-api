@@ -74,4 +74,13 @@ describe('Database Authentication use case', () => {
     expect(hashComparerStub.compare)
       .toHaveBeenCalledWith(authModel.password, accountModelFake.password)
   })
+
+  it('should throw if HashComparer throws', async () => {
+    const { sut, hashComparerStub } = makeSut()
+    hashComparerStub.compare.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    await expect(sut.auth(authModel)).rejects.toThrowError(Error)
+  })
 })

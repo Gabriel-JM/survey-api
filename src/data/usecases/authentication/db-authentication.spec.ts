@@ -19,15 +19,21 @@ function makeSut () {
     compare: jest.fn(() => Promise.resolve(true))
   }
 
+  const tokenGeneratorStub = {
+    generate: jest.fn(() => Promise.resolve('any_token'))
+  }
+
   const sut = new DbAuthenticationUseCase(
     loadAccountByEmailRepositoryStub,
-    hashComparerStub
+    hashComparerStub,
+    tokenGeneratorStub
   )
 
   return {
     sut,
     loadAccountByEmailRepositoryStub,
-    hashComparerStub
+    hashComparerStub,
+    tokenGeneratorStub
   }
 }
 
@@ -91,5 +97,13 @@ describe('Database Authentication use case', () => {
     const accessToken = await sut.auth(authModel)
 
     expect(accessToken).toBeNull()
+  })
+
+  it('should call TokenGenerator with correct id', async () => {
+    const { sut, tokenGeneratorStub } = makeSut()
+
+    await sut.auth(authModel)
+
+    expect(tokenGeneratorStub.generate).toHaveBeenCalledWith(accountModelFake.id)
   })
 })

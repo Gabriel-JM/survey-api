@@ -115,4 +115,12 @@ describe('Database Authentication use case', () => {
 
     await expect(sut.auth(authModel)).rejects.toThrowError(Error)
   })
+
+  it('should return access token on success', async () => {
+    const { sut } = makeSut()
+
+    const accessToken = await sut.auth(authModel)
+
+    expect(accessToken).toBe('any_token')
+  })
 })

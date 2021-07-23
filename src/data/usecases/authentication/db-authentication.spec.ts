@@ -8,6 +8,8 @@ const accountModelFake = <AccountModel> {
   password: 'hashed_password'
 }
 
+const tokenFake = 'any_token'
+
 function makeSut () {
   const loadAccountByEmailRepositoryStub = {
     load: jest.fn(
@@ -20,20 +22,26 @@ function makeSut () {
   }
 
   const tokenGeneratorStub = {
-    generate: jest.fn(() => Promise.resolve('any_token'))
+    generate: jest.fn(() => Promise.resolve(tokenFake))
+  }
+
+  const updateAccessTokenRepositoryStub = {
+    update: jest.fn(() => Promise.resolve())
   }
 
   const sut = new DbAuthenticationUseCase(
     loadAccountByEmailRepositoryStub,
     hashComparerStub,
-    tokenGeneratorStub
+    tokenGeneratorStub,
+    updateAccessTokenRepositoryStub
   )
 
   return {
     sut,
     loadAccountByEmailRepositoryStub,
     hashComparerStub,
-    tokenGeneratorStub
+    tokenGeneratorStub,
+    updateAccessTokenRepositoryStub
   }
 }
 
@@ -121,6 +129,15 @@ describe('Database Authentication use case', () => {
 
     const accessToken = await sut.auth(authModel)
 
-    expect(accessToken).toBe('any_token')
+    expect(accessToken).toBe(tokenFake)
+  })
+
+  it('should call UpdateAccessTokenRepository with correct values', async () => {
+    const { sut, updateAccessTokenRepositoryStub } = makeSut()
+
+    await sut.auth(authModel)
+
+    expect(updateAccessTokenRepositoryStub.update)
+      .toHaveBeenCalledWith(accountModelFake.id, tokenFake)
   })
 })

@@ -7,7 +7,7 @@ hashSpy.mockImplementation(() => 'hashed_value')
 
 const compareSpy = jest.spyOn(bcrypt, 'compare')
 
-compareSpy.mockImplementationOnce(() => true)
+compareSpy.mockImplementation(() => true)
 
 describe('Bcrypt Adapter', () => {
   const salt = 12
@@ -45,5 +45,13 @@ describe('Bcrypt Adapter', () => {
     const isValid = await sut.compare('any_value', 'any_hash')
 
     expect(isValid).toBe(true)
+  })
+
+  it('should return false on compare fails', async () => {
+    const sut = new BcryptAdapter(salt)
+    compareSpy.mockImplementationOnce(() => false)
+    const isValid = await sut.compare('any_value', 'any_hash')
+
+    expect(isValid).toBe(false)
   })
 })

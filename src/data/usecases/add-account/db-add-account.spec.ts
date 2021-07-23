@@ -8,18 +8,18 @@ const validAccount = {
 }
 
 function makeSut () {
-  const encrypterStub = {
-    encrypt: jest.fn(async () => await Promise.resolve('hashed_password'))
+  const hasherStub = {
+    hash: jest.fn(async () => await Promise.resolve('hashed_password'))
   }
   const addAccountRepositoryStub = {
     add: jest.fn(async () => await Promise.resolve(validAccount))
   }
 
-  const sut = new DbAddAccountUseCase(encrypterStub, addAccountRepositoryStub)
+  const sut = new DbAddAccountUseCase(hasherStub, addAccountRepositoryStub)
 
   return {
     sut,
-    encrypterStub,
+    hasherStub,
     addAccountRepositoryStub
   }
 }
@@ -31,17 +31,17 @@ describe('DbAddAccount Use Case', () => {
     password: 'any_password'
   }
 
-  it('should call Encrypter with correct password', async () => {
-    const { sut, encrypterStub } = makeSut()
+  it('should call Hasher with correct password', async () => {
+    const { sut, hasherStub } = makeSut()
 
     await sut.add(account)
 
-    expect(encrypterStub.encrypt).toHaveBeenCalledWith(account.password)
+    expect(hasherStub.hash).toHaveBeenCalledWith(account.password)
   })
 
-  it('should throw if Encrypter throws', async () => {
-    const { sut, encrypterStub } = makeSut()
-    encrypterStub.encrypt.mockRejectedValueOnce(new Error())
+  it('should throw if Hasher throws', async () => {
+    const { sut, hasherStub } = makeSut()
+    hasherStub.hash.mockRejectedValueOnce(new Error())
 
     await expect(sut.add(account)).rejects.toThrow()
   })

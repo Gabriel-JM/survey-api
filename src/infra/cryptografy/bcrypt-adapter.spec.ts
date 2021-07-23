@@ -10,14 +10,14 @@ describe('Bcrypt Adapter', () => {
 
   it('should call bcrypt with correct value', async () => {
     const sut = new BcryptAdapter(salt)
-    await sut.encrypt('any_value')
+    await sut.hash('any_value')
 
     expect(hashSpy).toHaveBeenCalledWith('any_value', salt)
   })
 
   it('should return the encrypted value on success', async () => {
     const sut = new BcryptAdapter(salt)
-    const hash = await sut.encrypt('any_value')
+    const hash = await sut.hash('any_value')
 
     expect(hash).toBe('hashed_value')
   })
@@ -26,6 +26,6 @@ describe('Bcrypt Adapter', () => {
     const sut = new BcryptAdapter(salt)
     hashSpy.mockImplementationOnce(() => { throw new Error() })
 
-    await expect(sut.encrypt('any_value')).rejects.toThrow()
+    await expect(sut.hash('any_value')).rejects.toThrow()
   })
 })

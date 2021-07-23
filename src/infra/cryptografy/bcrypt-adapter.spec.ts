@@ -26,7 +26,7 @@ describe('Bcrypt Adapter', () => {
     expect(hash).toBe('hashed_value')
   })
 
-  it('should throws if bcrypt throws', async () => {
+  it('should throws if bcrypt.hash throws', async () => {
     const sut = new BcryptAdapter(salt)
     hashSpy.mockImplementationOnce(() => { throw new Error() })
 
@@ -53,5 +53,12 @@ describe('Bcrypt Adapter', () => {
     const isValid = await sut.compare('any_value', 'any_hash')
 
     expect(isValid).toBe(false)
+  })
+
+  it('should throws if bcrypt.compare throws', async () => {
+    const sut = new BcryptAdapter(salt)
+    compareSpy.mockImplementationOnce(() => { throw new Error() })
+
+    await expect(sut.compare('any_value', 'any_hash')).rejects.toThrow()
   })
 })

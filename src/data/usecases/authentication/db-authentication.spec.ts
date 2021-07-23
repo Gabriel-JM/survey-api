@@ -21,8 +21,8 @@ function makeSut () {
     compare: jest.fn(() => Promise.resolve(true))
   }
 
-  const tokenGeneratorStub = {
-    generate: jest.fn(() => Promise.resolve(tokenFake))
+  const encrypterStub = {
+    encrypt: jest.fn(() => Promise.resolve(tokenFake))
   }
 
   const updateAccessTokenRepositoryStub = {
@@ -32,7 +32,7 @@ function makeSut () {
   const sut = new DbAuthenticationUseCase(
     loadAccountByEmailRepositoryStub,
     hashComparerStub,
-    tokenGeneratorStub,
+    encrypterStub,
     updateAccessTokenRepositoryStub
   )
 
@@ -40,7 +40,7 @@ function makeSut () {
     sut,
     loadAccountByEmailRepositoryStub,
     hashComparerStub,
-    tokenGeneratorStub,
+    encrypterStub,
     updateAccessTokenRepositoryStub
   }
 }
@@ -107,17 +107,17 @@ describe('Database Authentication use case', () => {
     expect(accessToken).toBeNull()
   })
 
-  it('should call TokenGenerator with correct id', async () => {
-    const { sut, tokenGeneratorStub } = makeSut()
+  it('should call Encrypter with correct id', async () => {
+    const { sut, encrypterStub } = makeSut()
 
     await sut.auth(authModel)
 
-    expect(tokenGeneratorStub.generate).toHaveBeenCalledWith(accountModelFake.id)
+    expect(encrypterStub.encrypt).toHaveBeenCalledWith(accountModelFake.id)
   })
 
-  it('should throw if TokenGenerator throws', async () => {
-    const { sut, tokenGeneratorStub } = makeSut()
-    tokenGeneratorStub.generate.mockImplementationOnce(() => {
+  it('should throw if Encrypter throws', async () => {
+    const { sut, encrypterStub } = makeSut()
+    encrypterStub.encrypt.mockImplementationOnce(() => {
       throw new Error()
     })
 

@@ -1,12 +1,6 @@
 import { MongoLogRepository } from './log'
 
-const insertOneStub = jest.fn(/* async () => await Promise.resolve({
-  ops: [
-    {
-      _id: 'valid_id'
-    }
-  ]
-}) */)
+const insertOneStub = jest.fn()
 
 const collectionStub = jest.fn((_name) => ({
   insertOne: insertOneStub

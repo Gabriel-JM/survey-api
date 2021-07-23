@@ -140,4 +140,13 @@ describe('Database Authentication use case', () => {
     expect(updateAccessTokenRepositoryStub.update)
       .toHaveBeenCalledWith(accountModelFake.id, tokenFake)
   })
+
+  it('should throw if UpdateAccessTokenRepository throws', async () => {
+    const { sut, updateAccessTokenRepositoryStub } = makeSut()
+    updateAccessTokenRepositoryStub.update.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    await expect(sut.auth(authModel)).rejects.toThrowError(Error)
+  })
 })

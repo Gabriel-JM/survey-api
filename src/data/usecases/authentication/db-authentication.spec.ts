@@ -26,7 +26,7 @@ function makeSut () {
   }
 
   const updateAccessTokenRepositoryStub = {
-    update: jest.fn(() => Promise.resolve())
+    updateAccessToken: jest.fn(() => Promise.resolve())
   }
 
   const sut = new DbAuthenticationUseCase(
@@ -137,13 +137,13 @@ describe('Database Authentication use case', () => {
 
     await sut.auth(authModel)
 
-    expect(updateAccessTokenRepositoryStub.update)
+    expect(updateAccessTokenRepositoryStub.updateAccessToken)
       .toHaveBeenCalledWith(accountModelFake.id, tokenFake)
   })
 
   it('should throw if UpdateAccessTokenRepository throws', async () => {
     const { sut, updateAccessTokenRepositoryStub } = makeSut()
-    updateAccessTokenRepositoryStub.update.mockImplementationOnce(() => {
+    updateAccessTokenRepositoryStub.updateAccessToken.mockImplementationOnce(() => {
       throw new Error()
     })
 

@@ -13,7 +13,7 @@ export class DbAuthenticationUseCase implements Authentication {
   ) {}
 
   async auth (credentials: AuthenticationModel): Promise<string | null> {
-    const account = await this.loadAccountByEmailRepository.load(credentials.email)
+    const account = await this.loadAccountByEmailRepository.loadByEmail(credentials.email)
 
     if (!account) return null
 

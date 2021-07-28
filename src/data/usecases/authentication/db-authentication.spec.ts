@@ -12,7 +12,7 @@ const tokenFake = 'any_token'
 
 function makeSut () {
   const loadAccountByEmailRepositoryStub = {
-    load: jest.fn(
+    loadByEmail: jest.fn(
       () => Promise.resolve(accountModelFake)
     ) as jest.Mock<Promise<AccountModel| null>>
   }
@@ -56,13 +56,13 @@ describe('Database Authentication use case', () => {
 
     await sut.auth(authModel)
 
-    expect(loadAccountByEmailRepositoryStub.load)
+    expect(loadAccountByEmailRepositoryStub.loadByEmail)
       .toHaveBeenCalledWith(authModel.email)
   })
 
   it('should throw if LoadAccountByEmailRepository throws', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
-    loadAccountByEmailRepositoryStub.load.mockImplementationOnce(() => {
+    loadAccountByEmailRepositoryStub.loadByEmail.mockImplementationOnce(() => {
       throw new Error()
     })
 
@@ -73,7 +73,7 @@ describe('Database Authentication use case', () => {
 
   it('should return null if LoadAccountByEmailRepository returns null', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
-    loadAccountByEmailRepositoryStub.load.mockResolvedValueOnce(null)
+    loadAccountByEmailRepositoryStub.loadByEmail.mockResolvedValueOnce(null)
 
     const accessToken = await sut.auth(authModel)
 

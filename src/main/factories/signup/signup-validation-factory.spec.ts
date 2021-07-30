@@ -1,19 +1,28 @@
-import { EmailValidation, RequiredFieldValidation, ValidationComposite } from '../../../presentation/helpers/validators'
+import {
+  CompareFieldsValidation,
+  EmailValidation,
+  RequiredFieldValidation,
+  ValidationComposite
+} from '../../../presentation/helpers/validators'
 import { Validation } from '../../../presentation/protocols/validation'
 import { EmailValidatorAdapter } from '../../../utils/email-validator-adapter'
-import { makeLoginValidation } from './login-validation'
+import { makeSignUpValidation } from './signup-validation-factory'
 
 jest.mock('../../../presentation/helpers/validators/validation-composite')
 
-describe('Login validation factory', () => {
+describe('Sign up validation factory', () => {
   it('should call ValidationComposite with correct values', () => {
-    makeLoginValidation()
+    makeSignUpValidation()
 
     const validations: Validation[] = []
 
-    for (const field of ['email', 'password']) {
+    for (const field of ['name', 'email', 'password', 'passwordConfirmation']) {
       validations.push(new RequiredFieldValidation(field))
     }
+
+    validations.push(
+      new CompareFieldsValidation('password', 'passwordConfirmation')
+    )
 
     validations.push(
       new EmailValidation('email', new EmailValidatorAdapter())

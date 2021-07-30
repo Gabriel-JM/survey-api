@@ -1,4 +1,4 @@
-import { MongoAccountRepository } from './account'
+import { MongoAccountRepository } from './mongo-account-repository'
 
 const fakeAccount = {
   id: 'valid_id',

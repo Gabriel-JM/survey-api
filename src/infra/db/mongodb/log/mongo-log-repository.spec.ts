@@ -1,4 +1,4 @@
-import { MongoLogRepository } from './log'
+import { MongoLogRepository } from './mongo-log-repository'
 
 const insertOneStub = jest.fn()
 

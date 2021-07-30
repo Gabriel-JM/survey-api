@@ -30,9 +30,12 @@ const findOneStub = jest.fn(() => Promise.resolve({
   password: string
 } | null>>
 
+const updateOneStub = jest.fn()
+
 const collectionStub = jest.fn((_name) => ({
   insertOne: insertOneStub,
-  findOne: findOneStub
+  findOne: findOneStub,
+  updateOne: updateOneStub
 }))
 
 jest.mock('../helpers/mongo-helper', () => {
@@ -95,5 +98,19 @@ describe('Account Mongo Repository', () => {
     const account = await sut.loadByEmail('any_email@mail.com')
 
     expect(account).toBeNull()
+  })
+
+  it('should update the account accessToken on updateAccessToken success', async () => {
+    const sut = new MongoAccountRepository()
+    await sut.updateAccessToken('any_id', 'any_token')
+
+    expect(updateOneStub).toHaveBeenCalledWith(
+      { _id: 'any_id' },
+      {
+        $set: {
+          accessToken: 'any_token'
+        }
+      }
+    )
   })
 })

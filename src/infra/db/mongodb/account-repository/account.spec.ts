@@ -1,6 +1,13 @@
 import { MongoAccountRepository } from './account'
 
-const insertOneStub = jest.fn(async () => await Promise.resolve({
+const fakeAccount = {
+  id: 'valid_id',
+  name: 'any_name',
+  email: 'any_email@mail.com',
+  password: 'any_password'
+}
+
+const insertOneStub = jest.fn(() => Promise.resolve({
   ops: [
     {
       _id: 'valid_id',
@@ -11,8 +18,21 @@ const insertOneStub = jest.fn(async () => await Promise.resolve({
   ]
 }))
 
+const findOneStub = jest.fn(() => Promise.resolve({
+  _id: 'valid_id',
+  name: 'any_name',
+  email: 'any_email@mail.com',
+  password: 'any_password'
+})) as jest.Mock<Promise<{
+  _id: string
+  name: string
+  email: string
+  password: string
+} | null>>
+
 const collectionStub = jest.fn((_name) => ({
-  insertOne: insertOneStub
+  insertOne: insertOneStub,
+  findOne: findOneStub
 }))
 
 jest.mock('../helpers/mongo-helper', () => {
@@ -31,12 +51,7 @@ jest.mock('../helpers/mongo-helper', () => {
       return await Promise.resolve(collectionStub('accounts'))
     }),
 
-    map: jest.fn(() => ({
-      id: 'valid_id',
-      name: 'any_name',
-      email: 'any_email@mail.com',
-      password: 'any_password'
-    }))
+    map: jest.fn(() => fakeAccount)
   }
 
   return {
@@ -45,7 +60,7 @@ jest.mock('../helpers/mongo-helper', () => {
 })
 
 describe('Account Mongo Repository', () => {
-  it('should return an account on success', async () => {
+  it('should return an account on add success', async () => {
     const sut = new MongoAccountRepository()
     const account = await sut.add({
       name: 'any_name',
@@ -60,11 +75,25 @@ describe('Account Mongo Repository', () => {
       password: 'any_password'
     })
 
-    expect(account).toEqual({
-      id: 'valid_id',
-      name: 'any_name',
-      email: 'any_email@mail.com',
-      password: 'any_password'
+    expect(account).toEqual(fakeAccount)
+  })
+
+  it('should return an account on loadByEmail success', async () => {
+    const sut = new MongoAccountRepository()
+    const account = await sut.loadByEmail('any_email@mail.com')
+
+    expect(collectionStub).toHaveBeenCalledWith('accounts')
+    expect(findOneStub).toHaveBeenCalledWith({
+      email: 'any_email@mail.com'
     })
+    expect(account).toEqual(fakeAccount)
+  })
+
+  it('should return null if load by email fails', async () => {
+    const sut = new MongoAccountRepository()
+    findOneStub.mockResolvedValueOnce(null)
+    const account = await sut.loadByEmail('any_email@mail.com')
+
+    expect(account).toBeNull()
   })
 })

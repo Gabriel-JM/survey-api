@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "node dist/main/server",
+    "dev": "npm run build && docker-compose up",
     "build": "rimraf dist && tsc",
     "test": "jest --passWithNoTests --runInBand",
     "test:unit": "npm test -- --watch -c jest-unit.config.ts",

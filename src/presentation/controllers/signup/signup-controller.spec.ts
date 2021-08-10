@@ -16,15 +16,23 @@ const makeSut = () => {
     validate: jest.fn(() => undefined) as jest.Mock<Error | undefined>
   }
 
+  const authenticationStub = {
+    auth: jest.fn(
+      async () => await Promise.resolve('any_access_token')
+    ) as jest.Mock<Promise<string | null>>
+  }
+
   const sut = new SignUpController(
     addAccountStub,
-    validationStub
+    validationStub,
+    authenticationStub
   )
 
   return {
     sut,
     addAccountStub,
-    validationStub
+    validationStub,
+    authenticationStub
   }
 }
 
@@ -83,5 +91,16 @@ describe('SignUp Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(new MissingParamError('any_field')))
+  })
+
+  it('shoudl call Authentication with correct values', async () => {
+    const { sut, authenticationStub } = makeSut()
+
+    await sut.handle(httpRequest)
+
+    expect(authenticationStub.auth).toHaveBeenCalledWith({
+      email: httpRequest.body.email,
+      password: httpRequest.body.password
+    })
   })
 })

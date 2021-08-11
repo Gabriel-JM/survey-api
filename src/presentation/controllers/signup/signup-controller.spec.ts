@@ -1,5 +1,6 @@
-import { MissingParamError, ServerError } from '../../errors'
-import { badRequest, ok, serverError } from '../../helpers/http/http-helper'
+import { AccountModel } from '../../../domain/models/account'
+import { EmailInUseError, MissingParamError, ServerError } from '../../errors'
+import { badRequest, forbidden, ok, serverError } from '../../helpers/http/http-helper'
 import { SignUpController } from './signup-controller'
 
 const makeSut = () => {
@@ -9,7 +10,7 @@ const makeSut = () => {
       name: 'any_name',
       email: 'valid_email@mail.com',
       password: 'valid_password'
-    }))
+    })) as jest.Mock<Promise<AccountModel | null>>
   }
 
   const validationStub = {
@@ -63,6 +64,14 @@ describe('SignUp Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(serverError(new ServerError('')))
+  })
+
+  it('should return 403 if AddAccount returns null', async () => {
+    const { sut, addAccountStub } = makeSut()
+    addAccountStub.add.mockResolvedValueOnce(null)
+
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(forbidden(new EmailInUseError()))
   })
 
   it('should return 200 if valid data is provided', async () => {

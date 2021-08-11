@@ -70,10 +70,7 @@ describe('SignUp Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(ok({
-      id: 'valid_id',
-      name: 'any_name',
-      email: 'valid_email@mail.com',
-      password: 'valid_password'
+      accessToken: 'any_access_token'
     }))
   })
 

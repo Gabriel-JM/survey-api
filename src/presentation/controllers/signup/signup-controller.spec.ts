@@ -103,4 +103,15 @@ describe('SignUp Controller', () => {
       password: httpRequest.body.password
     })
   })
+
+  it('should return 500 if Authentication throws', async () => {
+    const { sut, authenticationStub } = makeSut()
+    const error = new Error()
+    error.stack = undefined
+    authenticationStub.auth.mockRejectedValueOnce(error)
+
+    const httpResponse = await sut.handle(httpRequest)
+
+    expect(httpResponse).toEqual(serverError(error))
+  })
 })

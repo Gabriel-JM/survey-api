@@ -26,7 +26,7 @@ function makeSut () {
 
   const loadAccountByEmailRepositoryStub = {
     loadByEmail: jest.fn(
-      () => Promise.resolve(accountModelFake)
+      () => Promise.resolve(null)
     ) as jest.Mock<Promise<AccountModel| null>>
   }
 
@@ -99,5 +99,14 @@ describe('DbAddAccount Use Case', () => {
 
     expect(loadAccountByEmailRepositoryStub.loadByEmail)
       .toHaveBeenCalledWith(account.email)
+  })
+
+  it('should return null if LoadAccountByEmailRepository not returns null', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
+    loadAccountByEmailRepositoryStub.loadByEmail.mockResolvedValueOnce(accountModelFake)
+
+    const result = await sut.add(account)
+
+    expect(result).toBeNull()
   })
 })

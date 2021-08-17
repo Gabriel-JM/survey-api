@@ -1,7 +1,7 @@
-import { Authentication } from '../../../domain/usecases/authentication'
-import { EmailInUseError } from '../../errors'
-import { badRequest, forbidden, ok, serverError } from '../../helpers/http/http-helper'
-import { Validation } from '../../protocols/validation'
+import { Authentication } from '../../../../domain/usecases/authentication'
+import { EmailInUseError } from '../../../errors'
+import { badRequest, forbidden, ok, serverError } from '../../../helpers/http/http-helper'
+import { Validation } from '../../../protocols/validation'
 import {
   Controller,
   AddAccount,

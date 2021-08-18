@@ -1,5 +1,5 @@
 import { AddSurveyController } from './add-survey-controller'
-import { badRequest } from '../../../helpers/http/http-helper'
+import { badRequest, serverError } from '../../../helpers/http/http-helper'
 
 function makeSut () {
   const validationStub = {
@@ -53,5 +53,16 @@ describe('Add Survey Controller', () => {
     await sut.handle(fakeHttpRequest)
 
     expect(addSurveyStub.add).toHaveBeenCalledWith(fakeHttpRequest.body)
+  })
+
+  it('should return 500 if AddSurvey throws', async () => {
+    const { sut, addSurveyStub } = makeSut()
+    addSurveyStub.add.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const response = await sut.handle(fakeHttpRequest)
+
+    expect(response).toEqual(serverError(new Error()))
   })
 })

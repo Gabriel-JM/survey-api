@@ -6,11 +6,16 @@ function makeSut () {
     validate: jest.fn<Error | undefined, []>(() => undefined)
   }
 
-  const sut = new AddSurveyController(validationStub)
+  const addSurveyStub = {
+    add: jest.fn()
+  }
+
+  const sut = new AddSurveyController(validationStub, addSurveyStub)
 
   return {
     sut,
-    validationStub
+    validationStub,
+    addSurveyStub
   }
 }
 
@@ -40,5 +45,13 @@ describe('Add Survey Controller', () => {
     const response = await sut.handle(fakeHttpRequest)
 
     expect(response).toEqual(badRequest(new Error()))
+  })
+
+  it('should call AddSurvey with correct values', async () => {
+    const { sut, addSurveyStub } = makeSut()
+
+    await sut.handle(fakeHttpRequest)
+
+    expect(addSurveyStub.add).toHaveBeenCalledWith(fakeHttpRequest.body)
   })
 })

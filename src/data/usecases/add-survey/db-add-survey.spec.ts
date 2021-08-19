@@ -28,4 +28,13 @@ describe('DbAddSurvey use case', () => {
 
     expect(addSurveyRepositoryStub.add).toHaveBeenCalledWith(fakeAddSurveyModel)
   })
+
+  it('should throw if AddSurveyRepository throws', async () => {
+    const { sut, addSurveyRepositoryStub } = makeSut()
+    addSurveyRepositoryStub.add.mockRejectedValueOnce(new Error())
+
+    const promise = sut.add(fakeAddSurveyModel)
+
+    await expect(promise).rejects.toThrowError(Error)
+  })
 })

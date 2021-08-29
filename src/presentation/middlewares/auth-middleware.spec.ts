@@ -1,6 +1,7 @@
 import { forbidden } from '../helpers/http/http-helper'
 import { AccessDeniedError } from '../errors'
 import { AuthMiddleware } from './auth-middleware'
+import { AccountModel } from '../../domain/models/account'
 
 const fakeAccount = {
   id: 'any_id',
@@ -11,7 +12,9 @@ const fakeAccount = {
 
 function makeSut () {
   const loadAccountByTokenStub = {
-    load: jest.fn(() => Promise.resolve(fakeAccount))
+    load: jest.fn<Promise<AccountModel|null>, []>(
+      () => Promise.resolve(fakeAccount)
+    )
   }
 
   const sut = new AuthMiddleware(loadAccountByTokenStub)
@@ -41,5 +44,14 @@ describe('Auth Middleware', () => {
     await sut.handle(fakeRequest)
 
     expect(loadAccountByTokenStub.load).toHaveBeenCalledWith('any_token')
+  })
+
+  it('should return 403 if LoadAccountByToken returns null', async () => {
+    const { sut, loadAccountByTokenStub } = makeSut()
+    loadAccountByTokenStub.load.mockResolvedValueOnce(null)
+
+    const httpResponse = await sut.handle(fakeRequest)
+
+    expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
   })
 })

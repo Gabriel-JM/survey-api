@@ -10,14 +10,14 @@ const fakeAccount = {
   password: 'any_password'
 }
 
-function makeSut () {
+function makeSut (role?: string) {
   const loadAccountByTokenStub = {
     load: jest.fn<Promise<AccountModel|null>, []>(
       () => Promise.resolve(fakeAccount)
     )
   }
 
-  const sut = new AuthMiddleware(loadAccountByTokenStub)
+  const sut = new AuthMiddleware(loadAccountByTokenStub, role)
 
   return {
     sut,
@@ -40,10 +40,11 @@ describe('Auth Middleware', () => {
   })
 
   it('should call LoadAccountByToken with correct value', async () => {
-    const { sut, loadAccountByTokenStub } = makeSut()
+    const role = 'any_role'
+    const { sut, loadAccountByTokenStub } = makeSut(role)
     await sut.handle(fakeRequest)
 
-    expect(loadAccountByTokenStub.load).toHaveBeenCalledWith('any_token')
+    expect(loadAccountByTokenStub.load).toHaveBeenCalledWith('any_token', role)
   })
 
   it('should return 403 if LoadAccountByToken returns null', async () => {

@@ -48,6 +48,17 @@ describe('Db load account by token use case', () => {
     expect(response).toBeNull()
   })
 
+  it('should throw if Decrypter throws', async () => {
+    const { sut, decrypterStub } = makeSut()
+    decrypterStub.decrypt.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const promise = sut.load('any_token', 'any_role')
+
+    await expect(promise).rejects.toThrowError(Error)
+  })
+
   it('should call LoadAccountByTokenRepository with correct values', async () => {
     const { sut, loadAccountByTokenRepositoryStub } = makeSut()
     await sut.load('any_token', 'any_role')

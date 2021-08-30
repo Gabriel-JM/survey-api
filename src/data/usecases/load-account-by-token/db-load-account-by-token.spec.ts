@@ -1,3 +1,4 @@
+import { AccountModel } from '../../../domain/models/account'
 import { DbLoadAccountByTokenUseCase } from './db-load-account-by-token'
 
 const fakeAccount = {
@@ -13,7 +14,9 @@ function makeSut () {
   }
 
   const loadAccountByTokenRepositoryStub = {
-    loadByToken: jest.fn(() => Promise.resolve(fakeAccount))
+    loadByToken: jest.fn<Promise<AccountModel | null>, []>(
+      () => Promise.resolve(fakeAccount)
+    )
   }
 
   const sut = new DbLoadAccountByTokenUseCase(
@@ -51,5 +54,14 @@ describe('Db load account by token use case', () => {
 
     expect(loadAccountByTokenRepositoryStub.loadByToken)
       .toHaveBeenCalledWith('any_token', 'any_role')
+  })
+
+  it('should return null if LoadAccountByTokenRepository returns null', async () => {
+    const { sut, loadAccountByTokenRepositoryStub } = makeSut()
+    loadAccountByTokenRepositoryStub.loadByToken.mockResolvedValueOnce(null)
+
+    const response = await sut.load('any_token', 'any_role')
+
+    expect(response).toBeNull()
   })
 })

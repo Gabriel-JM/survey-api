@@ -76,6 +76,17 @@ describe('Db load account by token use case', () => {
     expect(response).toBeNull()
   })
 
+  it('should throw if LoadAccountByTokenRepository throws', async () => {
+    const { sut, loadAccountByTokenRepositoryStub } = makeSut()
+    loadAccountByTokenRepositoryStub.loadByToken.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const promise = sut.load('any_token', 'any_role')
+
+    await expect(promise).rejects.toThrowError(Error)
+  })
+
   it('should return an account on success', async () => {
     const { sut } = makeSut()
     const response = await sut.load('any_token', 'any_role')

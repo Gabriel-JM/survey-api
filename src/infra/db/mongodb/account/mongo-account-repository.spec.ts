@@ -4,7 +4,8 @@ const fakeAccount = {
   id: 'valid_id',
   name: 'any_name',
   email: 'any_email@mail.com',
-  password: 'any_password'
+  password: 'any_password',
+  accessToken: 'any_token'
 }
 
 const insertOneStub = jest.fn(() => Promise.resolve({
@@ -22,7 +23,8 @@ const findOneStub = jest.fn(() => Promise.resolve({
   _id: 'valid_id',
   name: 'any_name',
   email: 'any_email@mail.com',
-  password: 'any_password'
+  password: 'any_password',
+  accessToken: 'any_token'
 })) as jest.Mock<Promise<{
   _id: string
   name: string
@@ -50,8 +52,8 @@ jest.mock('../helpers/mongo-helper', () => {
 
     connect: jest.fn(),
 
-    getCollection: jest.fn(async () => {
-      return await Promise.resolve(collectionStub('accounts'))
+    getCollection: jest.fn(async (collectionName) => {
+      return await Promise.resolve(collectionStub(collectionName))
     }),
 
     map: jest.fn(() => fakeAccount)
@@ -117,6 +119,19 @@ describe('Account Mongo Repository', () => {
           }
         }
       )
+    })
+  })
+
+  describe('loadByToken()', () => {
+    it('should return an account on loadByToken without role', async () => {
+      const sut = new MongoAccountRepository()
+      const account = await sut.loadByToken('any_token')
+
+      expect(collectionStub).toHaveBeenCalledWith('accounts')
+      expect(findOneStub).toHaveBeenCalledWith({
+        accessToken: 'any_token'
+      })
+      expect(account).toEqual(fakeAccount)
     })
   })
 })

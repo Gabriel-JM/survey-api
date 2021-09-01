@@ -145,5 +145,13 @@ describe('Account Mongo Repository', () => {
       })
       expect(account).toEqual(fakeAccount)
     })
+
+    it('should return null if load by token fails', async () => {
+      const sut = new MongoAccountRepository()
+      findOneStub.mockResolvedValueOnce(null)
+      const account = await sut.loadByToken('any_token')
+
+      expect(account).toBeNull()
+    })
   })
 })

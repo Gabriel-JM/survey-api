@@ -133,5 +133,17 @@ describe('Account Mongo Repository', () => {
       })
       expect(account).toEqual(fakeAccount)
     })
+
+    it('should return an account on loadByToken with role', async () => {
+      const sut = new MongoAccountRepository()
+      const account = await sut.loadByToken('any_token', 'any_role')
+
+      expect(collectionStub).toHaveBeenCalledWith('accounts')
+      expect(findOneStub).toHaveBeenCalledWith({
+        accessToken: 'any_token',
+        role: 'any_role'
+      })
+      expect(account).toEqual(fakeAccount)
+    })
   })
 })

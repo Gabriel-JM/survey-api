@@ -1,0 +1,16 @@
+import { DbLoadAccountByTokenUseCase } from '../../../../../data/usecases/load-account-by-token/db-load-account-by-token'
+import { JWTAdapter } from '../../../../../infra/cryptografy/jwt/jwt-adapter'
+import { MongoAccountRepository } from '../../../../../infra/db/mongodb/account/mongo-account-repository'
+import env from '../../../../config/env'
+
+export function makeDbLoadAccountByToken () {
+  const accountRepository = new MongoAccountRepository()
+  const decrypter = new JWTAdapter(env.jwtSecret)
+
+  const loadAccountByTokenUsecase = new DbLoadAccountByTokenUseCase(
+    decrypter,
+    accountRepository
+  )
+
+  return loadAccountByTokenUsecase
+}

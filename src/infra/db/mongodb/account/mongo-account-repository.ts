@@ -25,7 +25,7 @@ export class MongoAccountRepository implements AccountRepository {
     const accountsCollection = await MongoHelper.getCollection('accounts')
     const account = await accountsCollection.findOne({
       accessToken: token,
-      role
+      $or: [{ role }, { role: 'admin' }]
     })
 
     return account

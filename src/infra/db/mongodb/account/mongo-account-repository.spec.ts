@@ -1,4 +1,5 @@
 import { MongoAccountRepository } from './mongo-account-repository'
+import { MongoHelper } from '../helpers/mongo-helper'
 
 const fakeAccount = {
   id: 'valid_id',
@@ -19,18 +20,12 @@ const insertOneStub = jest.fn(() => Promise.resolve({
   ]
 }))
 
-const findOneStub = jest.fn(() => Promise.resolve({
+const findOneStub = (jest.fn(() => Promise.resolve({
   _id: 'valid_id',
   name: 'any_name',
   email: 'any_email@mail.com',
-  password: 'any_password',
-  accessToken: 'any_token'
-})) as jest.Mock<Promise<{
-  _id: string
-  name: string
-  email: string
-  password: string
-} | null>>
+  password: 'any_password'
+})) as jest.Mock<unknown | null>)
 
 const updateOneStub = jest.fn()
 
@@ -99,7 +94,7 @@ describe('Account Mongo Repository', () => {
 
     it('should return null if load by email fails', async () => {
       const sut = new MongoAccountRepository()
-      findOneStub.mockResolvedValueOnce(null)
+      findOneStub.mockResolvedValueOnce(null as unknown as never)
       const account = await sut.loadByEmail('any_email@mail.com')
 
       expect(account).toBeNull()
@@ -129,26 +124,46 @@ describe('Account Mongo Repository', () => {
 
       expect(collectionStub).toHaveBeenCalledWith('accounts')
       expect(findOneStub).toHaveBeenCalledWith({
-        accessToken: 'any_token'
+        accessToken: 'any_token',
+        $or: [{ role: undefined }, { role: 'admin' }]
       })
       expect(account).toEqual(fakeAccount)
     })
 
     it('should return an account on loadByToken with role', async () => {
       const sut = new MongoAccountRepository()
-      const account = await sut.loadByToken('any_token', 'any_role')
+      const account = await sut.loadByToken('any_token', 'admin')
 
       expect(collectionStub).toHaveBeenCalledWith('accounts')
       expect(findOneStub).toHaveBeenCalledWith({
         accessToken: 'any_token',
-        role: 'any_role'
+        $or: [{ role: 'admin' }, { role: 'admin' }]
       })
       expect(account).toEqual(fakeAccount)
     })
 
+    it('should return null on loadByToken with invalid role', async () => {
+      const sut = new MongoAccountRepository()
+      jest.spyOn(MongoHelper, 'map').mockImplementationOnce(({ role }) => {
+        if (role !== 'admin') {
+          return null
+        }
+
+        return fakeAccount
+      })
+      const account = await sut.loadByToken('any_token', 'admin')
+
+      expect(collectionStub).toHaveBeenCalledWith('accounts')
+      expect(findOneStub).toHaveBeenCalledWith({
+        accessToken: 'any_token',
+        $or: [{ role: undefined }, { role: 'admin' }]
+      })
+      expect(account).toEqual(null)
+    })
+
     it('should return null if load by token fails', async () => {
       const sut = new MongoAccountRepository()
-      findOneStub.mockResolvedValueOnce(null)
+      findOneStub.mockResolvedValueOnce(null as unknown as never)
       const account = await sut.loadByToken('any_token')
 
       expect(account).toBeNull()

@@ -4,7 +4,8 @@ const fakeAccount = {
   id: 'valid_id',
   name: 'any_name',
   email: 'any_email@mail.com',
-  password: 'any_password'
+  password: 'any_password',
+  accessToken: 'any_token'
 }
 
 const insertOneStub = jest.fn(() => Promise.resolve({
@@ -22,7 +23,8 @@ const findOneStub = jest.fn(() => Promise.resolve({
   _id: 'valid_id',
   name: 'any_name',
   email: 'any_email@mail.com',
-  password: 'any_password'
+  password: 'any_password',
+  accessToken: 'any_token'
 })) as jest.Mock<Promise<{
   _id: string
   name: string
@@ -50,8 +52,8 @@ jest.mock('../helpers/mongo-helper', () => {
 
     connect: jest.fn(),
 
-    getCollection: jest.fn(async () => {
-      return await Promise.resolve(collectionStub('accounts'))
+    getCollection: jest.fn(async (collectionName) => {
+      return await Promise.resolve(collectionStub(collectionName))
     }),
 
     map: jest.fn(() => fakeAccount)
@@ -63,54 +65,93 @@ jest.mock('../helpers/mongo-helper', () => {
 })
 
 describe('Account Mongo Repository', () => {
-  it('should return an account on add success', async () => {
-    const sut = new MongoAccountRepository()
-    const account = await sut.add({
-      name: 'any_name',
-      email: 'any_email@mail.com',
-      password: 'any_password'
-    })
+  describe('add()', () => {
+    it('should return an account on add success', async () => {
+      const sut = new MongoAccountRepository()
+      const account = await sut.add({
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password'
+      })
 
-    expect(collectionStub).toHaveBeenCalledWith('accounts')
-    expect(insertOneStub).toHaveBeenCalledWith({
-      name: 'any_name',
-      email: 'any_email@mail.com',
-      password: 'any_password'
-    })
+      expect(collectionStub).toHaveBeenCalledWith('accounts')
+      expect(insertOneStub).toHaveBeenCalledWith({
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password'
+      })
 
-    expect(account).toEqual(fakeAccount)
+      expect(account).toEqual(fakeAccount)
+    })
   })
 
-  it('should return an account on loadByEmail success', async () => {
-    const sut = new MongoAccountRepository()
-    const account = await sut.loadByEmail('any_email@mail.com')
+  describe('loadByEmail()', () => {
+    it('should return an account on loadByEmail success', async () => {
+      const sut = new MongoAccountRepository()
+      const account = await sut.loadByEmail('any_email@mail.com')
 
-    expect(collectionStub).toHaveBeenCalledWith('accounts')
-    expect(findOneStub).toHaveBeenCalledWith({
-      email: 'any_email@mail.com'
+      expect(collectionStub).toHaveBeenCalledWith('accounts')
+      expect(findOneStub).toHaveBeenCalledWith({
+        email: 'any_email@mail.com'
+      })
+      expect(account).toEqual(fakeAccount)
     })
-    expect(account).toEqual(fakeAccount)
+
+    it('should return null if load by email fails', async () => {
+      const sut = new MongoAccountRepository()
+      findOneStub.mockResolvedValueOnce(null)
+      const account = await sut.loadByEmail('any_email@mail.com')
+
+      expect(account).toBeNull()
+    })
   })
 
-  it('should return null if load by email fails', async () => {
-    const sut = new MongoAccountRepository()
-    findOneStub.mockResolvedValueOnce(null)
-    const account = await sut.loadByEmail('any_email@mail.com')
+  describe('updateAccessToken()', () => {
+    it('should update the account accessToken on updateAccessToken success', async () => {
+      const sut = new MongoAccountRepository()
+      await sut.updateAccessToken('any_id', 'any_token')
 
-    expect(account).toBeNull()
-  })
-
-  it('should update the account accessToken on updateAccessToken success', async () => {
-    const sut = new MongoAccountRepository()
-    await sut.updateAccessToken('any_id', 'any_token')
-
-    expect(updateOneStub).toHaveBeenCalledWith(
-      { _id: 'any_id' },
-      {
-        $set: {
-          accessToken: 'any_token'
+      expect(updateOneStub).toHaveBeenCalledWith(
+        { _id: 'any_id' },
+        {
+          $set: {
+            accessToken: 'any_token'
+          }
         }
-      }
-    )
+      )
+    })
+  })
+
+  describe('loadByToken()', () => {
+    it('should return an account on loadByToken without role', async () => {
+      const sut = new MongoAccountRepository()
+      const account = await sut.loadByToken('any_token')
+
+      expect(collectionStub).toHaveBeenCalledWith('accounts')
+      expect(findOneStub).toHaveBeenCalledWith({
+        accessToken: 'any_token'
+      })
+      expect(account).toEqual(fakeAccount)
+    })
+
+    it('should return an account on loadByToken with role', async () => {
+      const sut = new MongoAccountRepository()
+      const account = await sut.loadByToken('any_token', 'any_role')
+
+      expect(collectionStub).toHaveBeenCalledWith('accounts')
+      expect(findOneStub).toHaveBeenCalledWith({
+        accessToken: 'any_token',
+        role: 'any_role'
+      })
+      expect(account).toEqual(fakeAccount)
+    })
+
+    it('should return null if load by token fails', async () => {
+      const sut = new MongoAccountRepository()
+      findOneStub.mockResolvedValueOnce(null)
+      const account = await sut.loadByToken('any_token')
+
+      expect(account).toBeNull()
+    })
   })
 })

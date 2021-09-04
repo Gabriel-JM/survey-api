@@ -1,7 +1,6 @@
 import { Router } from 'express'
-import { adaptRoute } from '../adapters/express/express-route-adapter'
-import { makeLoginController } from '../factories/controllers/login/login-controller-factory'
-import { makeSignUpController } from '../factories/controllers/signup/signup-controller-factory'
+import { adaptRoute } from '../adapters/express-route-adapter'
+import { makeLoginController, makeSignUpController } from '../factories/controllers'
 
 export default (router: Router) => {
   const signupController = makeSignUpController()

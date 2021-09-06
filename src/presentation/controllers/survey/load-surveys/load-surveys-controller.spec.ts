@@ -1,4 +1,5 @@
 import { LoadSurveysController } from './load-surveys-controller'
+import { ok } from '../../../helpers/http/http-helper'
 import MockDate from 'mockdate'
 
 const date = new Date()
@@ -44,5 +45,12 @@ describe('Load Surveys Controller', () => {
     await sut.handle({})
 
     expect(loadSurveysStub.load).toHaveBeenCalledWith()
+  })
+
+  it('should return 200 on success', async () => {
+    const { sut } = makeSut()
+    const response = await sut.handle({})
+
+    expect(response).toEqual(ok(fakeSurveys))
   })
 })

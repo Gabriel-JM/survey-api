@@ -1,5 +1,5 @@
 import { LoadSurveysController } from './load-surveys-controller'
-import { ok, serverError } from '../../../helpers/http/http-helper'
+import { noContent, ok, serverError } from '../../../helpers/http/http-helper'
 import MockDate from 'mockdate'
 
 const date = new Date()
@@ -52,6 +52,14 @@ describe('Load Surveys Controller', () => {
     const response = await sut.handle({})
 
     expect(response).toEqual(ok(fakeSurveys))
+  })
+
+  it('should return 204 if LoadSurveys returns an empty list', async () => {
+    const { sut, loadSurveysStub } = makeSut()
+    loadSurveysStub.load.mockResolvedValueOnce([])
+    const response = await sut.handle({})
+
+    expect(response).toEqual(noContent())
   })
 
   it('should return 500 if LoadSurveys throws', async () => {

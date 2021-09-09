@@ -45,4 +45,15 @@ describe('Db load surveys use case', () => {
 
     expect(response).toEqual(fakeSurveys)
   })
+
+  it('should throw if LoadSurveysRepository throws', async () => {
+    const { sut, loadSurveysRepositoryStub } = makeSut()
+    loadSurveysRepositoryStub.loadAll.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const promise = sut.load()
+
+    await expect(promise).rejects.toThrowError(Error)
+  })
 })

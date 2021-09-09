@@ -38,4 +38,11 @@ describe('Db load surveys use case', () => {
 
     expect(loadSurveysRepositoryStub.loadAll).toHaveBeenCalledWith()
   })
+
+  it('should return surveys on success', async () => {
+    const { sut } = makeSut()
+    const response = await sut.load()
+
+    expect(response).toEqual(fakeSurveys)
+  })
 })

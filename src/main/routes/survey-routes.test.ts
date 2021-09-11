@@ -5,10 +5,43 @@ import app from '../config/app'
 import { sign } from 'jsonwebtoken'
 import env from '../config/env'
 
-describe('Survey Routes', () => {
-  let surveyCollection: Collection
-  let accountCollection: Collection
+let surveyCollection: Collection
+let accountCollection: Collection
 
+async function makeAccessToken () {
+  const res = await accountCollection.insertOne({
+    name: 'Gabriel',
+    email: 'gabriel@email.com',
+    password: '123'
+  })
+
+  const id = res.ops[0]._id
+  const accessToken = sign({ id }, env.jwtSecret)
+
+  await accountCollection.updateOne({ _id: id }, {
+    $set: { accessToken }
+  })
+
+  await surveyCollection.insertMany([{
+    question: 'any_question',
+    answers: [{
+      image: 'any_image',
+      answer: 'any_answer'
+    }],
+    date: new Date()
+  }, {
+    question: 'other_question',
+    answers: [{
+      image: 'other_image',
+      answer: 'other_answer'
+    }],
+    date: new Date()
+  }])
+
+  return accessToken
+}
+
+describe('Survey Routes', () => {
   beforeAll(async () => {
     await MongoHelper.connect(process.env.MONGO_URL as string)
   })
@@ -80,34 +113,7 @@ describe('Survey Routes', () => {
     })
 
     it('should return 200 on load surveys with valid accessToken', async () => {
-      const res = await accountCollection.insertOne({
-        name: 'Gabriel',
-        email: 'gabriel@email.com',
-        password: '123'
-      })
-
-      const id = res.ops[0]._id
-      const accessToken = sign({ id }, env.jwtSecret)
-
-      await accountCollection.updateOne({ _id: id }, {
-        $set: { accessToken }
-      })
-
-      await surveyCollection.insertMany([{
-        question: 'any_question',
-        answers: [{
-          image: 'any_image',
-          answer: 'any_answer'
-        }],
-        date: new Date()
-      }, {
-        question: 'other_question',
-        answers: [{
-          image: 'other_image',
-          answer: 'other_answer'
-        }],
-        date: new Date()
-      }])
+      const accessToken = await makeAccessToken()
 
       await request(app)
         .get('/api/surveys')

@@ -1,4 +1,4 @@
-import { AccountModel } from '../../../domain/models/account'
+import { AccountModel } from '@/domain/models/account'
 import { DbAddAccountUseCase } from './db-add-account'
 
 const validAccount = {
@@ -8,7 +8,7 @@ const validAccount = {
   password: 'hashed_password'
 }
 
-const accountModelFake = <AccountModel> {
+const accountModelFake = <AccountModel>{
   id: 'any_id',
   name: 'any_name',
   email: 'any_email@mail.com',
@@ -27,7 +27,7 @@ function makeSut () {
   const loadAccountByEmailRepositoryStub = {
     loadByEmail: jest.fn(
       () => Promise.resolve(null)
-    ) as jest.Mock<Promise<AccountModel| null>>
+    ) as jest.Mock<Promise<AccountModel | null>>
   }
 
   const sut = new DbAddAccountUseCase(

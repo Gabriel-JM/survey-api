@@ -1,4 +1,4 @@
-import { AccountModel } from '../../../domain/models/account'
+import { AccountModel } from '@/domain/models/account'
 import { DbAuthenticationUseCase } from './db-authentication'
 
 const accountModelFake = <AccountModel> {

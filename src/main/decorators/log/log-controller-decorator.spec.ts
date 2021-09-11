@@ -1,4 +1,4 @@
-import { serverError } from '../../../presentation/helpers/http/http-helper'
+import { serverError } from '@/presentation/helpers/http/http-helper'
 import { LogControllerDecorator } from './log-controller-decorator'
 
 const httpResponseFixture = {

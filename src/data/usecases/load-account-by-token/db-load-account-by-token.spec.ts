@@ -1,4 +1,4 @@
-import { AccountModel } from '../../../domain/models/account'
+import { AccountModel } from '@/domain/models/account'
 import { DbLoadAccountByTokenUseCase } from './db-load-account-by-token'
 
 const fakeAccount = {

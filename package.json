@@ -11,7 +11,7 @@
     "start": "node dist/main/server",
     "debug": "nodemon -L --watch ./dist --inspect=0.0.0.0:9222 --nolazy ./dist/main/server.js",
     "dev": "npm run build && docker-compose up",
-    "build": "rimraf dist && tsc",
+    "build": "rimraf dist && tsc -p tsconfig-build.json",
     "test": "jest --passWithNoTests --runInBand",
     "test:unit": "npm test -- --watch -c jest-unit.config.ts",
     "test:int": "npm test -- --watch -c jest-integration.config.ts",
@@ -65,5 +65,8 @@
     "mongodb": "^3.6.9",
     "nodemon": "^2.0.12",
     "validator": "^13.6.0"
+  },
+  "_moduleAliases": {
+    "@": "dist"
   }
 }

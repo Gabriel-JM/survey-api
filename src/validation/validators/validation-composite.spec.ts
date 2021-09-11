@@ -1,4 +1,4 @@
-import { InvalidParamError, MissingParamError } from '../../presentation/errors'
+import { InvalidParamError, MissingParamError } from '@/presentation/errors'
 import { ValidationComposite } from './validation-composite'
 
 function makeSut () {

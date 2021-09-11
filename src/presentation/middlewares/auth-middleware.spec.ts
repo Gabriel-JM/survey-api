@@ -1,7 +1,7 @@
 import { forbidden, ok, serverError } from '../helpers/http/http-helper'
 import { AccessDeniedError } from '../errors'
 import { AuthMiddleware } from './auth-middleware'
-import { AccountModel } from '../../domain/models/account'
+import { AccountModel } from '@/domain/models/account'
 
 const fakeAccount = {
   id: 'any_id',

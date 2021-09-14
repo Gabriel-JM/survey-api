@@ -44,4 +44,15 @@ describe('Db load survey by id use case', () => {
 
     expect(response).toEqual(fakeSurvey)
   })
+
+  it('should throw if LoadSurveyByIdRepository throws', async () => {
+    const { sut, loadSurveyByIdRepositoryStub } = makeSut()
+    loadSurveyByIdRepositoryStub.loadById.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const promise = sut.loadById('any_id')
+
+    await expect(promise).rejects.toThrowError(Error)
+  })
 })

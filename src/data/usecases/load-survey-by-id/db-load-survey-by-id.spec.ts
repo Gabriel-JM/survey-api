@@ -1,3 +1,4 @@
+import { SurveyModel } from '@/domain/models/survey'
 import MockDate from 'mockdate'
 import { DbLoadSurveyByIdUsecase } from './db-load-survey-by-id'
 
@@ -15,7 +16,7 @@ const fakeSurvey = {
 
 function makeSut () {
   const loadSurveyByIdRepositoryStub = {
-    loadById: jest.fn(() => Promise.resolve(fakeSurvey))
+    loadById: jest.fn<Promise<SurveyModel|null>, []>(() => Promise.resolve(fakeSurvey))
   }
 
   const sut = new DbLoadSurveyByIdUsecase(loadSurveyByIdRepositoryStub)
@@ -36,6 +37,15 @@ describe('Db load survey by id use case', () => {
     await sut.loadById('any_id')
 
     expect(loadSurveyByIdRepositoryStub.loadById).toHaveBeenCalledWith('any_id')
+  })
+
+  it('should return null if LoadSurveyByIdRepository returns null', async () => {
+    const { sut, loadSurveyByIdRepositoryStub } = makeSut()
+    loadSurveyByIdRepositoryStub.loadById.mockResolvedValueOnce(null)
+
+    const response = await sut.loadById('any_id')
+
+    expect(response).toBeNull()
   })
 
   it('should return a survey on success', async () => {

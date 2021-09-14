@@ -42,4 +42,15 @@ describe('Db save survey result use case', () => {
 
     expect(saveSurveyResultRepositoryStub.save).toHaveBeenCalledWith(fakeParams)
   })
+
+  it('should throw if SaveSurveyResultRepository throws', async () => {
+    const { sut, saveSurveyResultRepositoryStub } = makeSut()
+    saveSurveyResultRepositoryStub.save.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const promise = sut.save(fakeParams)
+
+    await expect(promise).rejects.toThrowError(Error)
+  })
 })

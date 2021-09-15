@@ -1,9 +1,10 @@
+import { MongoHelper } from '../helpers/mongo-helper'
 import { MongoSurveyRepository } from './mongo-survey-repository'
 
 const insertOneStub = jest.fn()
 
 const fakeSurvey = {
-  _id: 'any_id',
+  id: 'any_id',
   question: 'any_question',
   answers: [{
     image: 'any_image',
@@ -12,7 +13,16 @@ const fakeSurvey = {
   date: new Date()
 }
 
-const toArrayStub = jest.fn(() => Promise.resolve([fakeSurvey]))
+const fakeMongoSurvey = {
+  _id: fakeSurvey.id,
+  question: fakeSurvey.question,
+  answers: fakeSurvey.answers,
+  date: fakeSurvey.date
+}
+
+const toArrayStub = jest.fn(() => Promise.resolve([fakeMongoSurvey]))
+
+const findOneStub = jest.fn(() => Promise.resolve(fakeMongoSurvey))
 
 const collectionStub = jest.fn((_name) => ({
   insertOne: insertOneStub,
@@ -20,8 +30,11 @@ const collectionStub = jest.fn((_name) => ({
     return {
       toArray: toArrayStub
     }
-  }
+  },
+  findOne: findOneStub
 }))
+
+const mapSpy = jest.spyOn(MongoHelper, 'map')
 
 jest.mock('../helpers/mongo-helper', () => {
   const MongoHelperStub = {
@@ -37,7 +50,16 @@ jest.mock('../helpers/mongo-helper', () => {
 
     getCollection: jest.fn(async () => {
       return await Promise.resolve(collectionStub('surveys'))
-    })
+    }),
+
+    map <T = any>(data: any) {
+      const { _id, ...dataWithoutId } = data
+
+      return <T> {
+        id: _id,
+        ...dataWithoutId
+      }
+    }
   }
 
   return {
@@ -75,6 +97,17 @@ describe('Mongo Survey Repository', () => {
 
       expect(collectionStub).toHaveBeenCalledWith('surveys')
       expect(response).toEqual([fakeSurvey])
+    })
+  })
+
+  describe('loadById()', () => {
+    it('should load survey by id on success', async () => {
+      const sut = new MongoSurveyRepository()
+      const response = await sut.loadById('any_id')
+
+      expect(findOneStub).toHaveBeenCalledWith({ _id: 'any_id' })
+      expect(mapSpy).toHaveBeenCalledWith(fakeMongoSurvey)
+      expect(response).toEqual(fakeSurvey)
     })
   })
 })

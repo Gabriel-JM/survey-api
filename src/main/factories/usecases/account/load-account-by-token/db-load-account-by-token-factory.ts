@@ -1,4 +1,4 @@
-import { DbLoadAccountByTokenUseCase } from '@/data/usecases/load-account-by-token/db-load-account-by-token'
+import { DbLoadAccountByTokenUseCase } from '@/data/usecases'
 import { JWTAdapter } from '@/infra/cryptografy/jwt/jwt-adapter'
 import { MongoAccountRepository } from '@/infra/db/mongodb/account/mongo-account-repository'
 import env from '@/main/config/env'

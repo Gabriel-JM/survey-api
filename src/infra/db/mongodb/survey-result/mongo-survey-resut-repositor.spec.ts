@@ -40,7 +40,7 @@ describe('Mongo survey result repository', () => {
   afterAll(() => MockDate.reset())
 
   describe('save()', () => {
-    it('should add a survey if its new', async () => {
+    it('should update a survey result', async () => {
       const sut = new MongoSurveyResultRepository()
       const surveyResult = await sut.save({
         surveyId: 'any_id',

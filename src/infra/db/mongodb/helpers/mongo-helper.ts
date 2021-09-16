@@ -32,5 +32,9 @@ export const MongoHelper = {
       id: _id,
       ...dataWithoutId
     }
+  },
+
+  mapCollection <T extends any[] = any[]>(collection: any[]) {
+    return collection.map(MongoHelper.map) as T
   }
 }

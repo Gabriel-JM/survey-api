@@ -1,3 +1,6 @@
+import { SurveyModel } from '@/domain/models/survey'
+import { InvalidParamError } from '@/presentation/errors'
+import { forbidden } from '@/presentation/helpers/http/http-helper'
 import { SaveSurveyResultController } from './save-survey-result-controller'
 
 const fakeSurvey = {
@@ -12,7 +15,7 @@ const fakeSurvey = {
 
 function makeSut () {
   const loadSurveyByIdStub = {
-    loadById: jest.fn(() => Promise.resolve(fakeSurvey))
+    loadById: jest.fn<Promise<SurveyModel|null>, []>(() => Promise.resolve(fakeSurvey))
   }
 
   const sut = new SaveSurveyResultController(loadSurveyByIdStub)
@@ -35,5 +38,13 @@ describe('Save survey result controller', () => {
     await sut.handle(fakeRequest)
 
     expect(loadSurveyByIdStub.loadById).toHaveBeenCalledWith('any_id')
+  })
+
+  it('should return 403 if LoadSurveyById returns null', async () => {
+    const { sut, loadSurveyByIdStub } = makeSut()
+    loadSurveyByIdStub.loadById.mockResolvedValueOnce(null)
+    const response = await sut.handle(fakeRequest)
+
+    expect(response).toEqual(forbidden(new InvalidParamError('surveyId')))
   })
 })

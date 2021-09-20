@@ -1,6 +1,6 @@
 import { SurveyModel } from '@/domain/models/survey'
 import { InvalidParamError } from '@/presentation/errors'
-import { forbidden } from '@/presentation/helpers/http/http-helper'
+import { forbidden, serverError } from '@/presentation/helpers/http/http-helper'
 import { SaveSurveyResultController } from './save-survey-result-controller'
 
 const fakeSurvey = {
@@ -46,5 +46,16 @@ describe('Save survey result controller', () => {
     const response = await sut.handle(fakeRequest)
 
     expect(response).toEqual(forbidden(new InvalidParamError('surveyId')))
+  })
+
+  it('should return 500 if LoadSurveyById throws', async () => {
+    const { sut, loadSurveyByIdStub } = makeSut()
+    loadSurveyByIdStub.loadById.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const response = await sut.handle(fakeRequest)
+
+    expect(response).toEqual(serverError(new Error()))
   })
 })

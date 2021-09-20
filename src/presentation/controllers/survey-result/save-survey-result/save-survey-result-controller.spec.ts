@@ -30,6 +30,9 @@ describe('Save survey result controller', () => {
   const fakeRequest = {
     params: {
       surveyId: 'any_id'
+    },
+    body: {
+      answer: 'any_answer'
     }
   }
 
@@ -57,5 +60,16 @@ describe('Save survey result controller', () => {
     const response = await sut.handle(fakeRequest)
 
     expect(response).toEqual(serverError(new Error()))
+  })
+
+  it('should return 403 if an invalid answer is provided', async () => {
+    const { sut } = makeSut()
+    const response = await sut.handle({
+      body: {
+        answer: 'wrong_answer'
+      }
+    })
+
+    expect(response).toEqual(forbidden(new InvalidParamError('answer')))
   })
 })

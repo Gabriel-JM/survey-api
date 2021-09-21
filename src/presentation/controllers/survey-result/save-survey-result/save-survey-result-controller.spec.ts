@@ -2,6 +2,9 @@ import { SurveyModel } from '@/domain/models/survey'
 import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, serverError } from '@/presentation/helpers/http/http-helper'
 import { SaveSurveyResultController } from './save-survey-result-controller'
+import MockDate from 'mockdate'
+
+const fakeDate = new Date()
 
 const fakeSurvey = {
   id: 'any_id',
@@ -13,21 +16,35 @@ const fakeSurvey = {
   date: new Date()
 }
 
+const fakeSurveyResult = {
+  id: 'any_id',
+  surveyId: 'any_id',
+  accountId: 'any_account_id',
+  answer: 'any_answer',
+  date: fakeDate
+}
+
 function makeSut () {
+  const saveSurveyResultStub = {
+    save: jest.fn(() => Promise.resolve(fakeSurveyResult))
+  }
+
   const loadSurveyByIdStub = {
     loadById: jest.fn<Promise<SurveyModel|null>, []>(() => Promise.resolve(fakeSurvey))
   }
 
-  const sut = new SaveSurveyResultController(loadSurveyByIdStub)
+  const sut = new SaveSurveyResultController(loadSurveyByIdStub, saveSurveyResultStub)
 
   return {
     sut,
-    loadSurveyByIdStub
+    loadSurveyByIdStub,
+    saveSurveyResultStub
   }
 }
 
 describe('Save survey result controller', () => {
   const fakeRequest = {
+    accountId: 'any_account_id',
     params: {
       surveyId: 'any_id'
     },
@@ -35,6 +52,10 @@ describe('Save survey result controller', () => {
       answer: 'any_answer'
     }
   }
+
+  beforeAll(() => MockDate.set(fakeDate))
+
+  afterAll(() => MockDate.reset())
 
   it('should call LoadSurveyById with correct values', async () => {
     const { sut, loadSurveyByIdStub } = makeSut()
@@ -71,5 +92,17 @@ describe('Save survey result controller', () => {
     })
 
     expect(response).toEqual(forbidden(new InvalidParamError('answer')))
+  })
+
+  it('should call SaveSurveyResult with correct values', async () => {
+    const { sut, saveSurveyResultStub } = makeSut()
+    await sut.handle(fakeRequest)
+
+    expect(saveSurveyResultStub.save).toHaveBeenCalledWith({
+      surveyId: 'any_id',
+      accountId: 'any_account_id',
+      answer: 'any_answer',
+      date: fakeDate
+    })
   })
 })

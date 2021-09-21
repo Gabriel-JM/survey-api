@@ -23,6 +23,8 @@ export class SaveSurveyResultController implements Controller {
         if (!answers.includes(answer)) {
           return forbidden(new InvalidParamError('answer'))
         }
+      } else {
+        return forbidden(new InvalidParamError('surveyId'))
       }
 
       await this.saveSurveyResult.save({
@@ -32,7 +34,7 @@ export class SaveSurveyResultController implements Controller {
         date: new Date()
       })
 
-      return forbidden(new InvalidParamError('surveyId'))
+      return {} as HttpResponse
     } catch (error) {
       return serverError(error)
     }

@@ -86,6 +86,7 @@ describe('Save survey result controller', () => {
   it('should return 403 if an invalid answer is provided', async () => {
     const { sut } = makeSut()
     const response = await sut.handle({
+      params: {},
       body: {
         answer: 'wrong_answer'
       }

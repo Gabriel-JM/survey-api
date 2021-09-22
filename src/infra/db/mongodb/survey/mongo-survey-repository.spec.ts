@@ -1,3 +1,4 @@
+import { SurveyModel } from '@/domain/models/survey'
 import { ObjectId } from 'bson'
 import { MongoHelper } from '../helpers/mongo-helper'
 import { MongoSurveyRepository } from './mongo-survey-repository'
@@ -23,7 +24,7 @@ const fakeMongoSurvey = {
 
 const toArrayStub = jest.fn(() => Promise.resolve([fakeMongoSurvey]))
 
-const findOneStub = jest.fn(() => Promise.resolve(fakeMongoSurvey))
+const findOneStub = jest.fn<Promise<SurveyModel|null>, []>(() => Promise.resolve(fakeMongoSurvey))
 
 const collectionStub = jest.fn((_name) => ({
   insertOne: insertOneStub,
@@ -103,6 +104,16 @@ describe('Mongo Survey Repository', () => {
       expect(collectionStub).toHaveBeenCalledWith('surveys')
       expect(response).toEqual([fakeSurvey])
     })
+
+    it('should an empty array if as no surveys in database', async () => {
+      const sut = new MongoSurveyRepository()
+      toArrayStub.mockResolvedValueOnce([])
+
+      const response = await sut.loadAll()
+
+      expect(collectionStub).toHaveBeenCalledWith('surveys')
+      expect(response).toEqual([])
+    })
   })
 
   describe('loadById()', () => {
@@ -122,6 +133,18 @@ describe('Mongo Survey Repository', () => {
       expect(findOneStub).toHaveBeenCalledWith({ _id: new ObjectId(id) })
       expect(mapSpy).toHaveBeenCalledWith(fakeMongoSurvey)
       expect(response).toEqual(fakeSurvey)
+    })
+
+    it('should return null if no survey was found by the given id', async () => {
+      const sut = new MongoSurveyRepository()
+      findOneStub.mockResolvedValueOnce(null)
+
+      const id = make24HexCharsId()
+      const response = await sut.loadById(id)
+
+      expect(findOneStub).toHaveBeenCalledWith({ _id: new ObjectId(id) })
+      expect(mapSpy).toHaveBeenCalledWith(fakeMongoSurvey)
+      expect(response).toBeNull()
     })
   })
 })

@@ -2,7 +2,8 @@ export default {
   roots: ['<rootDir>/src'],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
-    '!<rootDir>/src/main/**'
+    '!<rootDir>/src/main/**',
+    '!<rootDir>/src/domain/**/index.ts'
   ],
   coverageDirectory: 'coverage',
   testEnvironment: 'node',

@@ -1,0 +1,25 @@
+{
+  "configurations": [
+    {
+      "type": "node",
+      "name": "Docker: Attach to Node",
+      "port": 9222,
+      "request": "attach",
+      "restart": true,
+      "remoteRoot": "/usr/src/survey-api",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    },
+    {
+      "type": "node",
+      "name": "Attach to Node",
+      "port": 9222,
+      "request": "attach",
+      "restart": true,
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    }
+  ]
+}

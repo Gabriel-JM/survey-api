@@ -1,3 +1,4 @@
+import { ObjectId } from 'bson'
 import { MongoHelper } from '../helpers/mongo-helper'
 import { MongoSurveyRepository } from './mongo-survey-repository'
 
@@ -105,11 +106,20 @@ describe('Mongo Survey Repository', () => {
   })
 
   describe('loadById()', () => {
+    const randomHex = () => Math.random().toString(16).substr(2)
+
+    function make24HexCharsId () {
+      const str = `${randomHex()}${randomHex()}`
+
+      return str.length > 24 ? str.substring(0, 24) : str
+    }
+
     it('should load survey by id on success', async () => {
       const sut = new MongoSurveyRepository()
-      const response = await sut.loadById('any_id')
+      const id = make24HexCharsId()
+      const response = await sut.loadById(id)
 
-      expect(findOneStub).toHaveBeenCalledWith({ _id: 'any_id' })
+      expect(findOneStub).toHaveBeenCalledWith({ _id: new ObjectId(id) })
       expect(mapSpy).toHaveBeenCalledWith(fakeMongoSurvey)
       expect(response).toEqual(fakeSurvey)
     })

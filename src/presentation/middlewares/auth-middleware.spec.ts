@@ -2,13 +2,7 @@ import { forbidden, ok, serverError } from '../helpers/http/http-helper'
 import { AccessDeniedError } from '../errors'
 import { AuthMiddleware } from './auth-middleware'
 import { AccountModel } from '@/domain/models/account'
-
-const fakeAccount = {
-  id: 'any_id',
-  name: 'any_name',
-  email: 'any_email@mail.com',
-  password: 'any_password'
-}
+import { fakeAccount } from '@/domain/_test'
 
 function makeSut (role?: string) {
   const loadAccountByTokenStub = {

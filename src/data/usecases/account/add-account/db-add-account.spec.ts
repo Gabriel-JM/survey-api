@@ -1,17 +1,11 @@
 import { AccountModel } from '@/domain/models/account'
+import { fakeAccount } from '@/domain/_test'
 import { DbAddAccountUseCase } from './db-add-account'
 
 const validAccount = {
   id: 'valid_id',
   name: 'valid_name',
   email: 'valid_email@mail.com',
-  password: 'hashed_password'
-}
-
-const accountModelFake = <AccountModel>{
-  id: 'any_id',
-  name: 'any_name',
-  email: 'any_email@mail.com',
   password: 'hashed_password'
 }
 
@@ -103,7 +97,7 @@ describe('DbAddAccount Use Case', () => {
 
   it('should return null if LoadAccountByEmailRepository not returns null', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
-    loadAccountByEmailRepositoryStub.loadByEmail.mockResolvedValueOnce(accountModelFake)
+    loadAccountByEmailRepositoryStub.loadByEmail.mockResolvedValueOnce(fakeAccount)
 
     const result = await sut.add(account)
 

@@ -1,7 +1,7 @@
 import { MongoAccountRepository } from './mongo-account-repository'
 import { MongoHelper } from '../helpers/mongo-helper'
 
-const fakeAccount = {
+const fakeMongoAccount = {
   id: 'valid_id',
   name: 'any_name',
   email: 'any_email@mail.com',
@@ -51,7 +51,7 @@ jest.mock('../helpers/mongo-helper', () => {
       return await Promise.resolve(collectionStub(collectionName))
     }),
 
-    map: jest.fn(() => fakeAccount)
+    map: jest.fn(() => fakeMongoAccount)
   }
 
   return {
@@ -76,7 +76,7 @@ describe('Account Mongo Repository', () => {
         password: 'any_password'
       })
 
-      expect(account).toEqual(fakeAccount)
+      expect(account).toEqual(fakeMongoAccount)
     })
   })
 
@@ -89,7 +89,7 @@ describe('Account Mongo Repository', () => {
       expect(findOneStub).toHaveBeenCalledWith({
         email: 'any_email@mail.com'
       })
-      expect(account).toEqual(fakeAccount)
+      expect(account).toEqual(fakeMongoAccount)
     })
 
     it('should return null if load by email fails', async () => {
@@ -127,7 +127,7 @@ describe('Account Mongo Repository', () => {
         accessToken: 'any_token',
         $or: [{ role: undefined }, { role: 'admin' }]
       })
-      expect(account).toEqual(fakeAccount)
+      expect(account).toEqual(fakeMongoAccount)
     })
 
     it('should return an account on loadByToken with role', async () => {
@@ -139,7 +139,7 @@ describe('Account Mongo Repository', () => {
         accessToken: 'any_token',
         $or: [{ role: 'admin' }, { role: 'admin' }]
       })
-      expect(account).toEqual(fakeAccount)
+      expect(account).toEqual(fakeMongoAccount)
     })
 
     it('should return null on loadByToken with invalid role', async () => {
@@ -149,7 +149,7 @@ describe('Account Mongo Repository', () => {
           return null
         }
 
-        return fakeAccount
+        return fakeMongoAccount
       })
       const account = await sut.loadByToken('any_token', 'admin')
 

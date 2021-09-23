@@ -1,12 +1,6 @@
 import { AccountModel } from '@/domain/models/account'
+import { fakeAccount } from '@/domain/_test'
 import { DbLoadAccountByTokenUseCase } from './db-load-account-by-token'
-
-const fakeAccount = {
-  id: 'valid_id',
-  name: 'any_name',
-  email: 'any_email@mail.com',
-  password: 'any_password'
-}
 
 function makeSut () {
   const decrypterStub = {

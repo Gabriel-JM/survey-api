@@ -3,18 +3,11 @@ import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, ok, serverError } from '@/presentation/helpers/http/http-helper'
 import { SaveSurveyResultController } from './save-survey-result-controller'
 import MockDate from 'mockdate'
+import { mockSurveyModel } from '@/domain/_test'
 
 const fakeDate = new Date()
 
-const fakeSurvey = {
-  id: 'any_id',
-  question: 'any_question',
-  answers: [{
-    image: 'any_image',
-    answer: 'any_answer'
-  }],
-  date: new Date()
-}
+const fakeSurvey = mockSurveyModel()
 
 const fakeSurveyResult = {
   id: 'any_id',

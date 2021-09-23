@@ -1,20 +1,16 @@
 import { DbSaveSurveyResultUsecase } from './db-save-survey-result'
 import MockDate from 'mockdate'
+import { mockSaveSurveyResultParams, mockSurveyResultModel } from '@/domain/_test'
+import { mockSaveSurveyResultRepository } from '@/data/_test'
 
 const fakeDate = new Date()
 
-const fakeSurveyResult = {
-  id: 'any_id',
-  surveyId: 'any_id',
-  accountId: 'any_id',
-  answer: 'any_answer',
-  date: fakeDate
-}
+const fakeSurveyResult = mockSurveyResultModel(fakeDate)
 
 function makeSut () {
-  const saveSurveyResultRepositoryStub = {
-    save: jest.fn(() => Promise.resolve(fakeSurveyResult))
-  }
+  const saveSurveyResultRepositoryStub = mockSaveSurveyResultRepository({
+    returnValue: fakeSurveyResult
+  })
 
   const sut = new DbSaveSurveyResultUsecase(saveSurveyResultRepositoryStub)
 
@@ -25,12 +21,7 @@ function makeSut () {
 }
 
 describe('Db save survey result use case', () => {
-  const fakeParams = {
-    surveyId: 'any_id',
-    accountId: 'any_id',
-    answer: 'any_answer',
-    date: fakeDate
-  }
+  const fakeSaveSurveyResultParams = mockSaveSurveyResultParams(fakeDate)
 
   beforeAll(() => MockDate.set(fakeDate))
 
@@ -38,9 +29,9 @@ describe('Db save survey result use case', () => {
 
   it('should call SaveSurveyResultRepository with correct values', async () => {
     const { sut, saveSurveyResultRepositoryStub } = makeSut()
-    await sut.save(fakeParams)
+    await sut.save(fakeSaveSurveyResultParams)
 
-    expect(saveSurveyResultRepositoryStub.save).toHaveBeenCalledWith(fakeParams)
+    expect(saveSurveyResultRepositoryStub.save).toHaveBeenCalledWith(fakeSaveSurveyResultParams)
   })
 
   it('should throw if SaveSurveyResultRepository throws', async () => {
@@ -49,14 +40,14 @@ describe('Db save survey result use case', () => {
       throw new Error()
     })
 
-    const promise = sut.save(fakeParams)
+    const promise = sut.save(fakeSaveSurveyResultParams)
 
     await expect(promise).rejects.toThrowError(Error)
   })
 
   it('should return a survey result on success', async () => {
     const { sut } = makeSut()
-    const response = await sut.save(fakeParams)
+    const response = await sut.save(fakeSaveSurveyResultParams)
 
     expect(response).toEqual(fakeSurveyResult)
   })

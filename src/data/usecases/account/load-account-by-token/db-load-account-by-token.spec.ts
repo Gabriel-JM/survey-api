@@ -1,18 +1,8 @@
-import { AccountModel } from '@/domain/models/account'
+import { decrypterStub, loadAccountByTokenRepositoryStub } from '@/data/_test'
 import { fakeAccount } from '@/domain/_test'
 import { DbLoadAccountByTokenUseCase } from './db-load-account-by-token'
 
 function makeSut () {
-  const decrypterStub = {
-    decrypt: jest.fn<Promise<string | null>, []>(() => Promise.resolve('any_value'))
-  }
-
-  const loadAccountByTokenRepositoryStub = {
-    loadByToken: jest.fn<Promise<AccountModel | null>, []>(
-      () => Promise.resolve(fakeAccount)
-    )
-  }
-
   const sut = new DbLoadAccountByTokenUseCase(
     decrypterStub,
     loadAccountByTokenRepositoryStub

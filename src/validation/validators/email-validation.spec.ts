@@ -1,10 +1,9 @@
 import { InvalidParamError } from '@/presentation/errors'
+import { mockEmailValidator } from '../_test'
 import { EmailValidation } from './email-validation'
 
 function makeSut () {
-  const emailValidatorStub = {
-    isValid: jest.fn(() => true)
-  }
+  const emailValidatorStub = mockEmailValidator()
 
   const sut = new EmailValidation(
     'email',

@@ -1,27 +1,13 @@
+import { mockLoadSurveysRepository } from '@/data/_test'
+import { mockSurveyModel } from '@/domain/_test'
 import { DbLoadSurveysUseCase } from './db-load-surveys'
 
-const fakeSurveys = [{
-  id: 'any_id',
-  question: 'any_question',
-  answers: [{
-    image: 'any_image',
-    answer: 'any_answer'
-  }],
-  date: new Date()
-}, {
-  id: 'other_id',
-  question: 'other_question',
-  answers: [{
-    image: 'other_image',
-    answer: 'other_answer'
-  }],
-  date: new Date()
-}]
+const fakeSurveys = [mockSurveyModel(), mockSurveyModel()]
 
 function makeSut () {
-  const loadSurveysRepositoryStub = {
-    loadAll: jest.fn(() => Promise.resolve(fakeSurveys))
-  }
+  const loadSurveysRepositoryStub = mockLoadSurveysRepository({
+    returnValue: fakeSurveys
+  })
 
   const sut = new DbLoadSurveysUseCase(loadSurveysRepositoryStub)
 

@@ -1,19 +1,14 @@
 import { SurveyModel } from '@/domain/models/survey'
+import { mockSurveyModel } from '@/domain/_test'
 import { ObjectId } from 'bson'
 import { MongoHelper } from '../helpers/mongo-helper'
 import { MongoSurveyRepository } from './mongo-survey-repository'
 
+type MongoSurveyModel = Omit<SurveyModel, 'id'> & { _id: string }
+
 const insertOneStub = jest.fn()
 
-const fakeSurvey = {
-  id: 'any_id',
-  question: 'any_question',
-  answers: [{
-    image: 'any_image',
-    answer: 'any_answer'
-  }],
-  date: new Date()
-}
+const fakeSurvey = mockSurveyModel()
 
 const fakeMongoSurvey = {
   _id: fakeSurvey.id,
@@ -24,7 +19,7 @@ const fakeMongoSurvey = {
 
 const toArrayStub = jest.fn(() => Promise.resolve([fakeMongoSurvey]))
 
-const findOneStub = jest.fn<Promise<SurveyModel|null>, []>(() => Promise.resolve(fakeMongoSurvey))
+const findOneStub = jest.fn<Promise<MongoSurveyModel|null>, []>(() => Promise.resolve(fakeMongoSurvey))
 
 const collectionStub = jest.fn((_name) => ({
   insertOne: insertOneStub,

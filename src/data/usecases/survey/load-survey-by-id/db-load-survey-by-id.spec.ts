@@ -1,23 +1,14 @@
-import { SurveyModel } from '@/domain/models/survey'
+import { mockLoadSurveyByIdRepository } from '@/data/_test'
+import { mockSurveyModel } from '@/domain/_test'
 import MockDate from 'mockdate'
 import { DbLoadSurveyByIdUsecase } from './db-load-survey-by-id'
 
 const fakeDate = new Date()
 
-const fakeSurvey = {
-  id: 'any_id',
-  question: 'any_question',
-  answers: [{
-    image: 'any_image',
-    answer: 'any_answer'
-  }],
-  date: fakeDate
-}
+const fakeSurvey = mockSurveyModel(fakeDate)
 
 function makeSut () {
-  const loadSurveyByIdRepositoryStub = {
-    loadById: jest.fn<Promise<SurveyModel|null>, []>(() => Promise.resolve(fakeSurvey))
-  }
+  const loadSurveyByIdRepositoryStub = mockLoadSurveyByIdRepository(fakeDate)
 
   const sut = new DbLoadSurveyByIdUsecase(loadSurveyByIdRepositoryStub)
 

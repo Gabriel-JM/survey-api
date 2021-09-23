@@ -1,37 +1,19 @@
-import { SurveyModel } from '@/domain/models/survey'
 import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, ok, serverError } from '@/presentation/helpers/http/http-helper'
 import { SaveSurveyResultController } from './save-survey-result-controller'
 import MockDate from 'mockdate'
+import { mockSurveyModel, mockSurveyResultModel } from '@/domain/_test'
+import { mockLoadSurveyById, mockSaveSurveyResult } from '@/presentation/_test'
 
 const fakeDate = new Date()
 
-const fakeSurvey = {
-  id: 'any_id',
-  question: 'any_question',
-  answers: [{
-    image: 'any_image',
-    answer: 'any_answer'
-  }],
-  date: new Date()
-}
+const fakeSurvey = mockSurveyModel()
 
-const fakeSurveyResult = {
-  id: 'any_id',
-  surveyId: 'any_id',
-  accountId: 'any_account_id',
-  answer: 'any_answer',
-  date: fakeDate
-}
+const fakeSurveyResult = mockSurveyResultModel(fakeDate)
 
 function makeSut () {
-  const saveSurveyResultStub = {
-    save: jest.fn(() => Promise.resolve(fakeSurveyResult))
-  }
-
-  const loadSurveyByIdStub = {
-    loadById: jest.fn<Promise<SurveyModel|null>, []>(() => Promise.resolve(fakeSurvey))
-  }
+  const saveSurveyResultStub = mockSaveSurveyResult({ returnValue: fakeSurveyResult })
+  const loadSurveyByIdStub = mockLoadSurveyById({ returnValue: fakeSurvey })
 
   const sut = new SaveSurveyResultController(loadSurveyByIdStub, saveSurveyResultStub)
 

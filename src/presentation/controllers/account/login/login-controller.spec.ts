@@ -1,17 +1,11 @@
 import { MissingParamError } from '@/presentation/errors'
 import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers/http/http-helper'
+import { authenticationStub } from '@/presentation/_test'
+import { mockValidation } from '@/validation/_test'
 import { LoginController } from './login-controller'
 
 function makeSut () {
-  const validationStub = {
-    validate: jest.fn(() => undefined) as jest.Mock<Error | undefined>
-  }
-
-  const authenticationStub = {
-    auth: jest.fn(
-      async () => await Promise.resolve('any_access_token')
-    ) as jest.Mock<Promise<string | null>>
-  }
+  const validationStub = mockValidation()
 
   const sut = new LoginController(authenticationStub, validationStub)
 

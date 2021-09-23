@@ -1,15 +1,11 @@
 import { AddSurveyController } from './add-survey-controller'
 import { badRequest, noContent, serverError } from '../../../helpers/http/http-helper'
 import MockDate from 'mockdate'
+import { mockValidation } from '@/validation/_test'
+import { addSurveyStub } from '@/presentation/_test'
 
 function makeSut () {
-  const validationStub = {
-    validate: jest.fn<Error | undefined, []>(() => undefined)
-  }
-
-  const addSurveyStub = {
-    add: jest.fn()
-  }
+  const validationStub = mockValidation()
 
   const sut = new AddSurveyController(validationStub, addSurveyStub)
 

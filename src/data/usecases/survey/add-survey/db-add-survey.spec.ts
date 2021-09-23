@@ -1,10 +1,7 @@
+import { addSurveyRepositoryStub } from '@/data/_test'
 import { DbAddSurveyUsecase } from './db-add-survey'
 
 function makeSut () {
-  const addSurveyRepositoryStub = {
-    add: jest.fn()
-  }
-
   const sut = new DbAddSurveyUsecase(addSurveyRepositoryStub)
 
   return {

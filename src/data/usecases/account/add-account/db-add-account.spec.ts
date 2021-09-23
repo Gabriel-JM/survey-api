@@ -1,28 +1,15 @@
-import { AccountModel } from '@/domain/models/account'
+import {
+  addAccountRepositoryStub,
+  hasherStub,
+  mockLoadAccountByEmailRepository
+} from '@/data/_test'
 import { fakeAccount } from '@/domain/_test'
 import { DbAddAccountUseCase } from './db-add-account'
 
-const validAccount = {
-  id: 'valid_id',
-  name: 'valid_name',
-  email: 'valid_email@mail.com',
-  password: 'hashed_password'
-}
-
 function makeSut () {
-  const hasherStub = {
-    hash: jest.fn(async () => await Promise.resolve('hashed_password'))
-  }
-
-  const addAccountRepositoryStub = {
-    add: jest.fn(async () => await Promise.resolve(validAccount))
-  }
-
-  const loadAccountByEmailRepositoryStub = {
-    loadByEmail: jest.fn(
-      () => Promise.resolve(null)
-    ) as jest.Mock<Promise<AccountModel | null>>
-  }
+  const loadAccountByEmailRepositoryStub = mockLoadAccountByEmailRepository({
+    returnValue: null
+  })
 
   const sut = new DbAddAccountUseCase(
     hasherStub,
@@ -83,7 +70,7 @@ describe('DbAddAccount Use Case', () => {
 
     const result = await sut.add(account)
 
-    expect(result).toEqual(validAccount)
+    expect(result).toEqual(fakeAccount)
   })
 
   it('should call LoadAccountByEmailRepository with correct email', async () => {

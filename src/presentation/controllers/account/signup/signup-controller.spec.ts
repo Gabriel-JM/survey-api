@@ -1,21 +1,11 @@
-import { AccountModel } from '@/domain/models/account'
+import { addAccountStub } from '@/presentation/_test'
+import { mockValidation } from '@/validation/_test'
 import { EmailInUseError, MissingParamError, ServerError } from '../../../errors'
 import { badRequest, forbidden, ok, serverError } from '../../../helpers/http/http-helper'
 import { SignUpController } from './signup-controller'
 
 const makeSut = () => {
-  const addAccountStub = {
-    add: jest.fn(async () => await Promise.resolve({
-      id: 'valid_id',
-      name: 'any_name',
-      email: 'valid_email@mail.com',
-      password: 'valid_password'
-    })) as jest.Mock<Promise<AccountModel | null>>
-  }
-
-  const validationStub = {
-    validate: jest.fn(() => undefined) as jest.Mock<Error | undefined>
-  }
+  const validationStub = mockValidation()
 
   const authenticationStub = {
     auth: jest.fn(

@@ -1,33 +1,9 @@
-import { AccountModel } from '@/domain/models/account'
+import { encrypterStub, fakeToken, hashComparerStub, mockLoadAccountByEmailRepository, updateAccessTokenRepositoryStub } from '@/data/_test'
+import { fakeAccount, fakeAuthenticationParams } from '@/domain/_test'
 import { DbAuthenticationUseCase } from './db-authentication'
 
-const accountModelFake = <AccountModel> {
-  id: 'any_id',
-  name: 'any_name',
-  email: 'any_email@mail.com',
-  password: 'hashed_password'
-}
-
-const tokenFake = 'any_token'
-
 function makeSut () {
-  const loadAccountByEmailRepositoryStub = {
-    loadByEmail: jest.fn(
-      () => Promise.resolve(accountModelFake)
-    ) as jest.Mock<Promise<AccountModel| null>>
-  }
-
-  const hashComparerStub = {
-    compare: jest.fn(() => Promise.resolve(true))
-  }
-
-  const encrypterStub = {
-    encrypt: jest.fn(() => Promise.resolve(tokenFake))
-  }
-
-  const updateAccessTokenRepositoryStub = {
-    updateAccessToken: jest.fn(() => Promise.resolve())
-  }
+  const loadAccountByEmailRepositoryStub = mockLoadAccountByEmailRepository()
 
   const sut = new DbAuthenticationUseCase(
     loadAccountByEmailRepositoryStub,
@@ -46,18 +22,13 @@ function makeSut () {
 }
 
 describe('Database Authentication use case', () => {
-  const authModel = {
-    email: 'any_email@mail.com',
-    password: 'any_password'
-  }
-
   it('should call LoadAccountByEmailRepository with correct email', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
 
-    await sut.auth(authModel)
+    await sut.auth(fakeAuthenticationParams)
 
     expect(loadAccountByEmailRepositoryStub.loadByEmail)
-      .toHaveBeenCalledWith(authModel.email)
+      .toHaveBeenCalledWith(fakeAuthenticationParams.email)
   })
 
   it('should throw if LoadAccountByEmailRepository throws', async () => {
@@ -66,7 +37,7 @@ describe('Database Authentication use case', () => {
       throw new Error()
     })
 
-    const promise = sut.auth(authModel)
+    const promise = sut.auth(fakeAuthenticationParams)
 
     await expect(promise).rejects.toThrowError(Error)
   })
@@ -75,7 +46,7 @@ describe('Database Authentication use case', () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
     loadAccountByEmailRepositoryStub.loadByEmail.mockResolvedValueOnce(null)
 
-    const accessToken = await sut.auth(authModel)
+    const accessToken = await sut.auth(fakeAuthenticationParams)
 
     expect(accessToken).toBeNull()
   })
@@ -83,10 +54,10 @@ describe('Database Authentication use case', () => {
   it('should call HashComparer with correct values', async () => {
     const { sut, hashComparerStub } = makeSut()
 
-    await sut.auth(authModel)
+    await sut.auth(fakeAuthenticationParams)
 
     expect(hashComparerStub.compare)
-      .toHaveBeenCalledWith(authModel.password, accountModelFake.password)
+      .toHaveBeenCalledWith(fakeAuthenticationParams.password, fakeAccount.password)
   })
 
   it('should throw if HashComparer throws', async () => {
@@ -95,14 +66,14 @@ describe('Database Authentication use case', () => {
       throw new Error()
     })
 
-    await expect(sut.auth(authModel)).rejects.toThrowError(Error)
+    await expect(sut.auth(fakeAuthenticationParams)).rejects.toThrowError(Error)
   })
 
   it('should return null if HashComparer returns false', async () => {
     const { sut, hashComparerStub } = makeSut()
     hashComparerStub.compare.mockResolvedValueOnce(false)
 
-    const accessToken = await sut.auth(authModel)
+    const accessToken = await sut.auth(fakeAuthenticationParams)
 
     expect(accessToken).toBeNull()
   })
@@ -110,9 +81,9 @@ describe('Database Authentication use case', () => {
   it('should call Encrypter with correct id', async () => {
     const { sut, encrypterStub } = makeSut()
 
-    await sut.auth(authModel)
+    await sut.auth(fakeAuthenticationParams)
 
-    expect(encrypterStub.encrypt).toHaveBeenCalledWith(accountModelFake.id)
+    expect(encrypterStub.encrypt).toHaveBeenCalledWith(fakeAccount.id)
   })
 
   it('should throw if Encrypter throws', async () => {
@@ -121,24 +92,24 @@ describe('Database Authentication use case', () => {
       throw new Error()
     })
 
-    await expect(sut.auth(authModel)).rejects.toThrowError(Error)
+    await expect(sut.auth(fakeAuthenticationParams)).rejects.toThrowError(Error)
   })
 
   it('should return access token on success', async () => {
     const { sut } = makeSut()
 
-    const accessToken = await sut.auth(authModel)
+    const accessToken = await sut.auth(fakeAuthenticationParams)
 
-    expect(accessToken).toBe(tokenFake)
+    expect(accessToken).toBe(fakeToken)
   })
 
   it('should call UpdateAccessTokenRepository with correct values', async () => {
     const { sut, updateAccessTokenRepositoryStub } = makeSut()
 
-    await sut.auth(authModel)
+    await sut.auth(fakeAuthenticationParams)
 
     expect(updateAccessTokenRepositoryStub.updateAccessToken)
-      .toHaveBeenCalledWith(accountModelFake.id, tokenFake)
+      .toHaveBeenCalledWith(fakeAccount.id, fakeToken)
   })
 
   it('should throw if UpdateAccessTokenRepository throws', async () => {
@@ -147,6 +118,6 @@ describe('Database Authentication use case', () => {
       throw new Error()
     })
 
-    await expect(sut.auth(authModel)).rejects.toThrowError(Error)
+    await expect(sut.auth(fakeAuthenticationParams)).rejects.toThrowError(Error)
   })
 })

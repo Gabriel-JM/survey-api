@@ -3,7 +3,8 @@ export default {
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
     '!<rootDir>/src/main/**',
-    '!<rootDir>/src/domain/**/index.ts'
+    '!<rootDir>/src/domain/**/index.ts',
+    '!**/_test/**'
   ],
   coverageDirectory: 'coverage',
   testEnvironment: 'node',

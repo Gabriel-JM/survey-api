@@ -1,31 +1,15 @@
 import { LoadSurveysController } from './load-surveys-controller'
 import { noContent, ok, serverError } from '../../../helpers/http/http-helper'
 import MockDate from 'mockdate'
+import { mockSurveyModel } from '@/domain/_test'
+import { mockLoadSurveys } from '@/presentation/_test'
 
 const date = new Date()
 
-const fakeSurveys = [{
-  id: 'any_id',
-  question: 'any_question',
-  answers: [{
-    image: 'any_image',
-    answer: 'any_answer'
-  }],
-  date
-}, {
-  id: 'other_id',
-  question: 'other_question',
-  answers: [{
-    image: 'other_image',
-    answer: 'other_answer'
-  }],
-  date
-}]
+const fakeSurveys = [mockSurveyModel(date), mockSurveyModel(date)]
 
 function makeSut () {
-  const loadSurveysStub = {
-    load: jest.fn(() => Promise.resolve(fakeSurveys))
-  }
+  const loadSurveysStub = mockLoadSurveys({ returnValue: fakeSurveys })
 
   const sut = new LoadSurveysController(loadSurveysStub)
 

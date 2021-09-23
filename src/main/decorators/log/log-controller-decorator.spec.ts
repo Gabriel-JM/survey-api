@@ -1,3 +1,4 @@
+import { logErrorRepositoryStub } from '@/data/_test'
 import { serverError } from '@/presentation/helpers/http/http-helper'
 import { LogControllerDecorator } from './log-controller-decorator'
 
@@ -13,10 +14,6 @@ function makeSut () {
     handle: jest.fn(async () => {
       return await Promise.resolve(httpResponseFixture)
     })
-  }
-
-  const logErrorRepositoryStub = {
-    logError: jest.fn()
   }
 
   const sut = new LogControllerDecorator(controllerStub, logErrorRepositoryStub)

@@ -1,14 +1,11 @@
 import { InvalidParamError, MissingParamError } from '@/presentation/errors'
+import { mockValidation } from '../_test'
 import { ValidationComposite } from './validation-composite'
 
 function makeSut () {
   const validationStubs = [
-    {
-      validate: jest.fn(() => undefined) as jest.Mock<Error | undefined>
-    },
-    {
-      validate: jest.fn(() => undefined) as jest.Mock<Error | undefined>
-    }
+    mockValidation(),
+    mockValidation()
   ]
 
   const sut = new ValidationComposite(validationStubs)

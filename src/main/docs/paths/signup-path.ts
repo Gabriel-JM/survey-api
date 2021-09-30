@@ -1,10 +1,17 @@
-export const surveysPath = {
-  get: {
-    security: [{
-      apiKeyAuth: []
-    }],
-    tags: ['Enquetes'],
-    summary: 'API para listar as enquetes',
+export const signUpPath = {
+  post: {
+    tags: ['Login'],
+    summary: 'API para criar a conta de um usuário',
+
+    requestBody: {
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/schemas/signUpParams'
+          }
+        }
+      }
+    },
 
     responses: {
       200: {
@@ -20,8 +27,8 @@ export const surveysPath = {
       400: {
         $ref: '#/components/badRequest'
       },
-      403: {
-        $ref: '#/components/forbidden'
+      401: {
+        $ref: '#/components/unauthorized'
       },
       404: {
         $ref: '#/components/notFound'

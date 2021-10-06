@@ -6,6 +6,7 @@ import {
   saveSurveyResultParamsSchema,
   signUpParamsSchema,
   surveyAnswerSchema,
+  surveyResultAnswerSchema,
   surveyResultSchema,
   surveySchema,
   surveysSchema
@@ -21,5 +22,6 @@ export const schemas = {
   survey: surveySchema,
   surveyAnswer: surveyAnswerSchema,
   surveys: surveysSchema,
-  surveyResult: surveyResultSchema
+  surveyResult: surveyResultSchema,
+  surveyResultAnswer: surveyResultAnswerSchema
 } as const

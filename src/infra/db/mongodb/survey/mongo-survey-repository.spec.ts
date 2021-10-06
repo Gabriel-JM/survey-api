@@ -1,5 +1,6 @@
 import { SurveyModel } from '@/domain/models/survey'
 import { mockSurveyModel } from '@/domain/_test'
+import { make24HexCharsId } from '@/infra/_test'
 import { ObjectId } from 'bson'
 import { MongoHelper } from '../helpers/mongo-helper'
 import { MongoSurveyRepository } from './mongo-survey-repository'
@@ -112,14 +113,6 @@ describe('Mongo Survey Repository', () => {
   })
 
   describe('loadById()', () => {
-    const randomHex = () => Math.random().toString(16).substr(2)
-
-    function make24HexCharsId () {
-      const str = `${randomHex()}${randomHex()}`
-
-      return str.length > 24 ? str.substring(0, 24) : str
-    }
-
     it('should load survey by id on success', async () => {
       const sut = new MongoSurveyRepository()
       const id = make24HexCharsId()

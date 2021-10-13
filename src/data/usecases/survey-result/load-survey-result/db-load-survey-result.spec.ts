@@ -19,4 +19,15 @@ describe('Db load survey result use case', () => {
 
     expect(loadSurveyResultRepositoryStub.loadBySurveyId).toHaveBeenCalledWith('any_id')
   })
+
+  it('should throw if LoadSurveyResultRepository throws', async () => {
+    const { sut, loadSurveyResultRepositoryStub } = makeSut()
+    loadSurveyResultRepositoryStub.loadBySurveyId.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const promise = sut.load('any_id')
+
+    await expect(promise).rejects.toThrowError(Error)
+  })
 })

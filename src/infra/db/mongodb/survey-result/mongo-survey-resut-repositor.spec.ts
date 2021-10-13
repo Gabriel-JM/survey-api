@@ -75,4 +75,28 @@ describe('Mongo survey result repository', () => {
       expect(surveyResult).toEqual(fakeSurveyResult)
     })
   })
+
+  describe('loadBySurveyId()', () => {
+    it('should load survey result by the given survey id', async () => {
+      const sut = new MongoSurveyResultRepository()
+      const surveyId = make24HexCharsId()
+      const surveyResult = await sut.loadBySurveyId(surveyId)
+
+      expect(getCollectionSpy).toHaveBeenCalledWith('surveyResults')
+      expect(toArrayStub).toHaveBeenCalled()
+      expect(surveyResult).toEqual(fakeSurveyResult)
+    })
+
+    it('should return if no survey result was found', async () => {
+      const sut = new MongoSurveyResultRepository()
+      const surveyId = make24HexCharsId()
+      toArrayStub.mockResolvedValueOnce([])
+
+      const surveyResult = await sut.loadBySurveyId(surveyId)
+
+      expect(getCollectionSpy).toHaveBeenCalledWith('surveyResults')
+      expect(toArrayStub).toHaveBeenCalled()
+      expect(surveyResult).toBeNull()
+    })
+  })
 })

@@ -4,8 +4,10 @@ import { SaveSurveyResultParams } from '@/domain/usecases'
 import { ObjectId } from 'mongodb'
 import { MongoHelper, QueryBuilder } from '../helpers'
 import round from 'mongo-round'
+import { LoadSurveyResultRepository } from '@/data/protocols/db/survey-result/load-survey-result-repository'
+import { make24HexCharsId } from '@/infra/_test'
 
-export class MongoSurveyResultRepository implements SaveSurveyResultRepository {
+export class MongoSurveyResultRepository implements SaveSurveyResultRepository, LoadSurveyResultRepository {
   async save (data: SaveSurveyResultParams): Promise<SurveyResultModel> {
     const surveyResultCollection = await MongoHelper.getCollection('surveyResults')
     await surveyResultCollection.findOneAndUpdate({
@@ -18,12 +20,12 @@ export class MongoSurveyResultRepository implements SaveSurveyResultRepository {
       }
     }, { upsert: true, returnDocument: 'after' })
 
-    const surveyResult = await this.loadBySurveyId(data.surveyId, data.accountId)
+    const surveyResult = await this.loadBySurveyId(data.surveyId)
 
-    return surveyResult
+    return surveyResult as SurveyResultModel
   }
 
-  async loadBySurveyId (surveyId: string, accountId: string) {
+  async loadBySurveyId (surveyId: string) {
     const surveyResultCollection = await MongoHelper.getCollection('surveyResults')
     const query = new QueryBuilder()
       .match({
@@ -64,7 +66,13 @@ export class MongoSurveyResultRepository implements SaveSurveyResultRepository {
         },
         currentAccountAnswer: {
           $push: {
-            $cond: [{ $eq: ['$data.accountId', new ObjectId(accountId)] }, '$data.answer', '$invalid']
+            $cond: [
+              {
+                $eq: ['$data.accountId', new ObjectId(make24HexCharsId())]
+              },
+              '$data.answer',
+              '$invalid'
+            ]
           }
         }
       })
@@ -200,6 +208,6 @@ export class MongoSurveyResultRepository implements SaveSurveyResultRepository {
 
     const surveyResult = await surveyResultCollection.aggregate(query).toArray()
 
-    return surveyResult?.length ? surveyResult[0] : null
+    return surveyResult?.length ? surveyResult[0] as SurveyResultModel : null
   }
 }

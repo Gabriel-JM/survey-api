@@ -1,10 +1,8 @@
-import { mockSurveyResultModel } from '@/domain/_test'
+import { mockLoadSurveyResultRepository } from '@/data/_test'
 import { DbLoadSurveyResultUsecase } from './db-load-survey-result'
 
 function makeSut () {
-  const loadSurveyResultRepositoryStub = {
-    loadBySurveyId: jest.fn(() => Promise.resolve(mockSurveyResultModel()))
-  }
+  const loadSurveyResultRepositoryStub = mockLoadSurveyResultRepository()
 
   const sut = new DbLoadSurveyResultUsecase(loadSurveyResultRepositoryStub)
 

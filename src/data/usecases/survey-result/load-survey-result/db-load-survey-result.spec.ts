@@ -1,4 +1,5 @@
 import { mockLoadSurveyResultRepository } from '@/data/_test'
+import { mockSurveyResultModel } from '@/domain/_test'
 import { DbLoadSurveyResultUsecase } from './db-load-survey-result'
 
 function makeSut () {
@@ -29,5 +30,12 @@ describe('Db load survey result use case', () => {
     const promise = sut.load('any_id')
 
     await expect(promise).rejects.toThrowError(Error)
+  })
+
+  it('should return a surveyResultModel on success', async () => {
+    const { sut } = makeSut()
+    const response = await sut.load('any_id')
+
+    expect(response).toEqual(mockSurveyResultModel())
   })
 })

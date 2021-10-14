@@ -53,6 +53,15 @@ describe('Db load survey result use case', () => {
     expect(loadSurveyByIdRepositoryStub.loadById).toHaveBeenCalledWith('any_id')
   })
 
+  it('should return a surveyResultModel with count 0 if LoadSurveyResultRepository returns null', async () => {
+    const { sut, loadSurveyResultRepositoryStub } = makeSut()
+    loadSurveyResultRepositoryStub.loadBySurveyId.mockResolvedValueOnce(null)
+
+    const surveyResult = await sut.load('any_id')
+
+    expect(surveyResult).toEqual(mockSurveyResultModel())
+  })
+
   it('should return a surveyResultModel on success', async () => {
     const { sut } = makeSut()
     const response = await sut.load('any_id')

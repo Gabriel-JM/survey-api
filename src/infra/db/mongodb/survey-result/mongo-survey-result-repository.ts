@@ -8,7 +8,7 @@ import { LoadSurveyResultRepository } from '@/data/protocols/db/survey-result/lo
 import { make24HexCharsId } from '@/infra/_test'
 
 export class MongoSurveyResultRepository implements SaveSurveyResultRepository, LoadSurveyResultRepository {
-  async save (data: SaveSurveyResultParams): Promise<SurveyResultModel> {
+  async save (data: SaveSurveyResultParams): Promise<void> {
     const surveyResultCollection = await MongoHelper.getCollection('surveyResults')
     await surveyResultCollection.findOneAndUpdate({
       surveyId: new ObjectId(data.surveyId),
@@ -19,10 +19,6 @@ export class MongoSurveyResultRepository implements SaveSurveyResultRepository, 
         date: data.date
       }
     }, { upsert: true, returnDocument: 'after' })
-
-    const surveyResult = await this.loadBySurveyId(data.surveyId)
-
-    return surveyResult as SurveyResultModel
   }
 
   async loadBySurveyId (surveyId: string) {

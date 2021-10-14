@@ -71,8 +71,8 @@ describe('Mongo survey result repository', () => {
 
       expect(getCollectionSpy).toHaveBeenCalledWith('surveyResults')
       expect(findOneAndUpdateStub).toHaveBeenCalledWith(...findOneAndUpdateExpectedParams)
-      expect(toArrayStub).toHaveBeenCalled()
-      expect(surveyResult).toEqual(fakeSurveyResult)
+      expect(toArrayStub).not.toHaveBeenCalled()
+      expect(surveyResult).toBeUndefined()
     })
   })
 

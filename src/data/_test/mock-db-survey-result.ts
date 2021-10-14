@@ -1,3 +1,4 @@
+import { SurveyResultModel } from '@/domain/models/survey-result'
 import { mockSurveyResultModel } from '@/domain/_test'
 
 export const mockSaveSurveyResultRepository = () => ({
@@ -5,5 +6,7 @@ export const mockSaveSurveyResultRepository = () => ({
 })
 
 export const mockLoadSurveyResultRepository = () => ({
-  loadBySurveyId: jest.fn(() => Promise.resolve(mockSurveyResultModel()))
+  loadBySurveyId: jest.fn<Promise<SurveyResultModel | null>, []>(
+    () => Promise.resolve(mockSurveyResultModel())
+  )
 })

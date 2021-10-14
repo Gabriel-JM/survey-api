@@ -1,19 +1,31 @@
-import { mockLoadSurveyResultRepository } from '@/data/_test'
+import { mockLoadSurveyByIdRepository, mockLoadSurveyResultRepository } from '@/data/_test'
 import { mockSurveyResultModel } from '@/domain/_test'
 import { DbLoadSurveyResultUsecase } from './db-load-survey-result'
+import MockDate from 'mockdate'
+
+const fakeDate = new Date()
 
 function makeSut () {
   const loadSurveyResultRepositoryStub = mockLoadSurveyResultRepository()
+  const loadSurveyByIdRepositoryStub = mockLoadSurveyByIdRepository()
 
-  const sut = new DbLoadSurveyResultUsecase(loadSurveyResultRepositoryStub)
+  const sut = new DbLoadSurveyResultUsecase(
+    loadSurveyResultRepositoryStub,
+    loadSurveyByIdRepositoryStub
+  )
 
   return {
     sut,
-    loadSurveyResultRepositoryStub
+    loadSurveyResultRepositoryStub,
+    loadSurveyByIdRepositoryStub
   }
 }
 
 describe('Db load survey result use case', () => {
+  beforeAll(() => MockDate.set(fakeDate))
+
+  afterAll(() => MockDate.reset())
+
   it('should call LoadSurveyResultRepository with correct values', async () => {
     const { sut, loadSurveyResultRepositoryStub } = makeSut()
     await sut.load('any_id')
@@ -32,10 +44,19 @@ describe('Db load survey result use case', () => {
     await expect(promise).rejects.toThrowError(Error)
   })
 
+  it('should call LoadSurveyByIdRepository if LoadSurveyResultRepository returns null', async () => {
+    const { sut, loadSurveyResultRepositoryStub, loadSurveyByIdRepositoryStub } = makeSut()
+    loadSurveyResultRepositoryStub.loadBySurveyId.mockResolvedValueOnce(null)
+
+    await sut.load('any_id')
+
+    expect(loadSurveyByIdRepositoryStub.loadById).toHaveBeenCalledWith('any_id')
+  })
+
   it('should return a surveyResultModel on success', async () => {
     const { sut } = makeSut()
     const response = await sut.load('any_id')
 
-    expect(response).toEqual(mockSurveyResultModel())
+    expect(response).toEqual(mockSurveyResultModel(fakeDate))
   })
 })

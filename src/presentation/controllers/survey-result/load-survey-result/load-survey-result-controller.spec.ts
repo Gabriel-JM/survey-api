@@ -1,7 +1,7 @@
 import { mockSurveyModel } from '@/domain/_test'
 import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, serverError } from '@/presentation/helpers/http/http-helper'
-import { mockLoadSurveyById } from '@/presentation/_test'
+import { mockLoadSurveyById, mockLoadSurveyResult } from '@/presentation/_test'
 import { LoadSurveyResultController } from './load-survey-result-controller'
 
 function makeSut () {
@@ -9,11 +9,14 @@ function makeSut () {
     returnValue: mockSurveyModel()
   })
 
-  const sut = new LoadSurveyResultController(loadSurveyByIdStub)
+  const loadSurveyResultStub = mockLoadSurveyResult()
+
+  const sut = new LoadSurveyResultController(loadSurveyByIdStub, loadSurveyResultStub)
 
   return {
     sut,
-    loadSurveyByIdStub
+    loadSurveyByIdStub,
+    loadSurveyResultStub
   }
 }
 
@@ -49,5 +52,12 @@ describe('LoadSurveyResultController', () => {
     const response = await sut.handle(fakeRequest)
 
     expect(response).toEqual(serverError(new Error()))
+  })
+
+  it('should call LoadSurveyResult with correct values', async () => {
+    const { sut, loadSurveyResultStub } = makeSut()
+    await sut.handle(fakeRequest)
+
+    expect(loadSurveyResultStub.load).toHaveBeenCalledWith(fakeRequest.params.surveyId)
   })
 })

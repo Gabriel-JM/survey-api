@@ -16,11 +16,11 @@ export class DbLoadSurveyResultUsecase implements LoadSurveyResult {
       const survey = await this.loadSurveyByIdRepository.loadById(surveyId) as SurveyModel
 
       surveyResult = {
-        surveyId: survey?.id,
-        question: survey?.question,
-        answers: survey?.answers
+        surveyId: survey.id,
+        question: survey.question,
+        answers: survey.answers
           .map(answer => ({ ...answer, count: 0, percent: 0 })),
-        date: survey?.date
+        date: survey.date
       }
     }
 

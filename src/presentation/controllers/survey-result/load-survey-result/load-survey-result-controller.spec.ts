@@ -1,4 +1,6 @@
 import { mockSurveyModel } from '@/domain/_test'
+import { InvalidParamError } from '@/presentation/errors'
+import { forbidden } from '@/presentation/helpers/http/http-helper'
 import { mockLoadSurveyById } from '@/presentation/_test'
 import { LoadSurveyResultController } from './load-survey-result-controller'
 
@@ -27,5 +29,14 @@ describe('LoadSurveyResultController', () => {
     await sut.handle(fakeRequest)
 
     expect(loadSurveyByIdStub.loadById).toHaveBeenCalledWith(fakeRequest.params.surveyId)
+  })
+
+  it('should return 403 if LoadSurveyById returns null', async () => {
+    const { sut, loadSurveyByIdStub } = makeSut()
+    loadSurveyByIdStub.loadById.mockResolvedValueOnce(null)
+
+    const response = await sut.handle(fakeRequest)
+
+    expect(response).toEqual(forbidden(new InvalidParamError('surveyId')))
   })
 })

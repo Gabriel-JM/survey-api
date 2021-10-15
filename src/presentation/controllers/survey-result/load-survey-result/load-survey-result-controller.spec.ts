@@ -60,4 +60,15 @@ describe('LoadSurveyResultController', () => {
 
     expect(loadSurveyResultStub.load).toHaveBeenCalledWith(fakeRequest.params.surveyId)
   })
+
+  it('shoudl return 500 if LoadSurveyResult throws', async () => {
+    const { sut, loadSurveyResultStub } = makeSut()
+    loadSurveyResultStub.load.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const response = await sut.handle(fakeRequest)
+
+    expect(response).toEqual(serverError(new Error()))
+  })
 })

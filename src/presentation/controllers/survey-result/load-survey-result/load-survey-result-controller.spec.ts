@@ -1,6 +1,6 @@
 import { mockSurveyModel } from '@/domain/_test'
 import { InvalidParamError } from '@/presentation/errors'
-import { forbidden } from '@/presentation/helpers/http/http-helper'
+import { forbidden, serverError } from '@/presentation/helpers/http/http-helper'
 import { mockLoadSurveyById } from '@/presentation/_test'
 import { LoadSurveyResultController } from './load-survey-result-controller'
 
@@ -38,5 +38,16 @@ describe('LoadSurveyResultController', () => {
     const response = await sut.handle(fakeRequest)
 
     expect(response).toEqual(forbidden(new InvalidParamError('surveyId')))
+  })
+
+  it('shoudl return 500 if LoadSurveyById throws', async () => {
+    const { sut, loadSurveyByIdStub } = makeSut()
+    loadSurveyByIdStub.loadById.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const response = await sut.handle(fakeRequest)
+
+    expect(response).toEqual(serverError(new Error()))
   })
 })

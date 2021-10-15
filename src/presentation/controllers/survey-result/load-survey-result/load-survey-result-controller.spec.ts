@@ -1,15 +1,19 @@
-import { mockSurveyModel } from '@/domain/_test'
+import { mockSurveyModel, mockSurveyResultModel } from '@/domain/_test'
 import { InvalidParamError } from '@/presentation/errors'
-import { forbidden, serverError } from '@/presentation/helpers/http/http-helper'
+import { forbidden, ok, serverError } from '@/presentation/helpers/http/http-helper'
 import { mockLoadSurveyById, mockLoadSurveyResult } from '@/presentation/_test'
 import { LoadSurveyResultController } from './load-survey-result-controller'
+
+const fakeDate = new Date()
 
 function makeSut () {
   const loadSurveyByIdStub = mockLoadSurveyById({
     returnValue: mockSurveyModel()
   })
 
-  const loadSurveyResultStub = mockLoadSurveyResult()
+  const loadSurveyResultStub = mockLoadSurveyResult({
+    fakeDate
+  })
 
   const sut = new LoadSurveyResultController(loadSurveyByIdStub, loadSurveyResultStub)
 
@@ -70,5 +74,12 @@ describe('LoadSurveyResultController', () => {
     const response = await sut.handle(fakeRequest)
 
     expect(response).toEqual(serverError(new Error()))
+  })
+
+  it('should return 200 on success', async () => {
+    const { sut } = makeSut()
+    const response = await sut.handle(fakeRequest)
+
+    expect(response).toEqual(ok(mockSurveyResultModel(fakeDate)))
   })
 })

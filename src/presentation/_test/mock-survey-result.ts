@@ -6,6 +6,6 @@ export const mockSaveSurveyResult = ({ returnValue }: ReturnValue<SurveyResultMo
   save: jest.fn(() => Promise.resolve(returnValue))
 })
 
-export const mockLoadSurveyResult = () => ({
-  load: jest.fn(() => Promise.resolve(mockSurveyResultModel()))
+export const mockLoadSurveyResult = ({ fakeDate }: { fakeDate?: Date } = {}) => ({
+  load: jest.fn(() => Promise.resolve(mockSurveyResultModel(fakeDate)))
 })

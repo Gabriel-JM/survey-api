@@ -97,7 +97,7 @@ describe('Login Routes', () => {
         .expect(403)
     })
 
-    it('should return 200 on save survey result with access token', async () => {
+    it('should return 200 on load survey result with access token', async () => {
       const res = await surveyCollection.insertOne({
         question: 'any_question',
         answers: [{
@@ -110,11 +110,8 @@ describe('Login Routes', () => {
       const accessToken = await makeAccessToken()
 
       await request(app)
-        .put(`/api/surveys/${res.ops[0]._id as string}/results`)
+        .get(`/api/surveys/${res.ops[0]._id as string}/results`)
         .set('x-access-token', accessToken)
-        .send({
-          answer: 'any_answer'
-        })
         .expect(200)
     })
   })

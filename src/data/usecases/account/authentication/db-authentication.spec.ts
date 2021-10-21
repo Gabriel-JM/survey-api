@@ -46,9 +46,9 @@ describe('Database Authentication use case', () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
     loadAccountByEmailRepositoryStub.loadByEmail.mockResolvedValueOnce(null)
 
-    const accessToken = await sut.auth(fakeAuthenticationParams)
+    const model = await sut.auth(fakeAuthenticationParams)
 
-    expect(accessToken).toBeNull()
+    expect(model).toBeNull()
   })
 
   it('should call HashComparer with correct values', async () => {
@@ -73,9 +73,9 @@ describe('Database Authentication use case', () => {
     const { sut, hashComparerStub } = makeSut()
     hashComparerStub.compare.mockResolvedValueOnce(false)
 
-    const accessToken = await sut.auth(fakeAuthenticationParams)
+    const model = await sut.auth(fakeAuthenticationParams)
 
-    expect(accessToken).toBeNull()
+    expect(model).toBeNull()
   })
 
   it('should call Encrypter with correct id', async () => {
@@ -95,12 +95,15 @@ describe('Database Authentication use case', () => {
     await expect(sut.auth(fakeAuthenticationParams)).rejects.toThrowError(Error)
   })
 
-  it('should return access token on success', async () => {
+  it('should return an authentication model on success', async () => {
     const { sut } = makeSut()
 
-    const accessToken = await sut.auth(fakeAuthenticationParams)
+    const model = await sut.auth(fakeAuthenticationParams)
 
-    expect(accessToken).toBe(fakeToken)
+    expect(model).toEqual({
+      accessToken: fakeToken,
+      name: fakeAccount.name
+    })
   })
 
   it('should call UpdateAccessTokenRepository with correct values', async () => {

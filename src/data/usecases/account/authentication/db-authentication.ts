@@ -3,6 +3,7 @@ import { HashComparer } from '@/data/protocols/criptography/hash-comparer'
 import { Encrypter } from '@/data/protocols/criptography/encrypter'
 import { LoadAccountByEmailRepository } from '@/data/protocols/db/account/load-account-by-email-repository'
 import { UpdateAccessTokenRepository } from '@/data/protocols/db/account/update-access-token-repository'
+import { AuthenticationModel } from '@/domain/models/authentication'
 
 export class DbAuthenticationUseCase implements Authentication {
   constructor (
@@ -12,7 +13,7 @@ export class DbAuthenticationUseCase implements Authentication {
     private readonly updateAccessTokenRepository: UpdateAccessTokenRepository
   ) {}
 
-  async auth (credentials: AuthenticationParams): Promise<string | null> {
+  async auth (credentials: AuthenticationParams): Promise<AuthenticationModel | null> {
     const account = await this.loadAccountByEmailRepository.loadByEmail(credentials.email)
 
     if (!account) return null
@@ -28,6 +29,9 @@ export class DbAuthenticationUseCase implements Authentication {
 
     await this.updateAccessTokenRepository.updateAccessToken(account.id, accessToken)
 
-    return accessToken
+    return {
+      name: account.name,
+      accessToken
+    }
   }
 }

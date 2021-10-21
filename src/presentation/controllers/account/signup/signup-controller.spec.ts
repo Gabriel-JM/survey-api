@@ -1,4 +1,4 @@
-import { addAccountStub } from '@/presentation/_test'
+import { addAccountStub, authenticationStub } from '@/presentation/_test'
 import { mockValidation } from '@/validation/_test'
 import { EmailInUseError, MissingParamError, ServerError } from '../../../errors'
 import { badRequest, forbidden, ok, serverError } from '../../../helpers/http/http-helper'
@@ -6,12 +6,6 @@ import { SignUpController } from './signup-controller'
 
 const makeSut = () => {
   const validationStub = mockValidation()
-
-  const authenticationStub = {
-    auth: jest.fn(
-      async () => await Promise.resolve('any_access_token')
-    ) as jest.Mock<Promise<string | null>>
-  }
 
   const sut = new SignUpController(
     addAccountStub,
@@ -69,7 +63,8 @@ describe('SignUp Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(ok({
-      accessToken: 'any_access_token'
+      accessToken: 'any_access_token',
+      name: 'any_name'
     }))
   })
 

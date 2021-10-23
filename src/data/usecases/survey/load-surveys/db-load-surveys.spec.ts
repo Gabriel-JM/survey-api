@@ -18,16 +18,18 @@ function makeSut () {
 }
 
 describe('Db load surveys use case', () => {
+  const accountId = 'any_account_id'
+
   it('should call LoadSurveysRepository with correct values', async () => {
     const { sut, loadSurveysRepositoryStub } = makeSut()
-    await sut.load()
+    await sut.load(accountId)
 
-    expect(loadSurveysRepositoryStub.loadAll).toHaveBeenCalledWith()
+    expect(loadSurveysRepositoryStub.loadAll).toHaveBeenCalledWith(accountId)
   })
 
   it('should return surveys on success', async () => {
     const { sut } = makeSut()
-    const response = await sut.load()
+    const response = await sut.load(accountId)
 
     expect(response).toEqual(fakeSurveys)
   })
@@ -38,7 +40,7 @@ describe('Db load surveys use case', () => {
       throw new Error()
     })
 
-    const promise = sut.load()
+    const promise = sut.load(accountId)
 
     await expect(promise).rejects.toThrowError(Error)
   })

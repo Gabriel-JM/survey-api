@@ -8,6 +8,10 @@ const date = new Date()
 
 const fakeSurveys = [mockSurveyModel(date), mockSurveyModel(date)]
 
+const mockRequestParams = () => ({
+  accountId: 'any_account_id'
+})
+
 function makeSut () {
   const loadSurveysStub = mockLoadSurveys({ returnValue: fakeSurveys })
 
@@ -24,16 +28,17 @@ describe('Load Surveys Controller', () => {
 
   afterAll(() => MockDate.reset())
 
-  it('should call LoadSurveys', async () => {
+  it('should call LoadSurveys with correct value', async () => {
     const { sut, loadSurveysStub } = makeSut()
-    await sut.handle({})
+    const httpRequest = mockRequestParams()
+    await sut.handle(httpRequest)
 
-    expect(loadSurveysStub.load).toHaveBeenCalledWith()
+    expect(loadSurveysStub.load).toHaveBeenCalledWith(httpRequest.accountId)
   })
 
   it('should return 200 on success', async () => {
     const { sut } = makeSut()
-    const response = await sut.handle({})
+    const response = await sut.handle(mockRequestParams())
 
     expect(response).toEqual(ok(fakeSurveys))
   })
@@ -41,7 +46,7 @@ describe('Load Surveys Controller', () => {
   it('should return 204 if LoadSurveys returns an empty list', async () => {
     const { sut, loadSurveysStub } = makeSut()
     loadSurveysStub.load.mockResolvedValueOnce([])
-    const response = await sut.handle({})
+    const response = await sut.handle(mockRequestParams())
 
     expect(response).toEqual(noContent())
   })
@@ -52,7 +57,7 @@ describe('Load Surveys Controller', () => {
       throw new Error()
     })
 
-    const response = await sut.handle({})
+    const response = await sut.handle(mockRequestParams())
 
     expect(response).toEqual(serverError(new Error()))
   })

@@ -19,17 +19,14 @@ const fakeMongoSurvey = {
 }
 
 const toArrayStub = jest.fn(() => Promise.resolve([fakeMongoSurvey]))
-
 const findOneStub = jest.fn<Promise<MongoSurveyModel|null>, []>(() => Promise.resolve(fakeMongoSurvey))
+const aggregateStub = jest.fn(() => ({ toArray: toArrayStub }))
 
 const collectionStub = jest.fn((_name) => ({
   insertOne: insertOneStub,
-  find () {
-    return {
-      toArray: toArrayStub
-    }
-  },
-  findOne: findOneStub
+  find: () => ({ toArray: toArrayStub }),
+  findOne: findOneStub,
+  aggregate: aggregateStub
 }))
 
 const mapSpy = jest.spyOn(MongoHelper, 'map')
@@ -93,11 +90,14 @@ describe('Mongo Survey Repository', () => {
   })
 
   describe('loadAll()', () => {
+    const fakeAccountId = make24HexCharsId()
+
     it('should load all surveys on success', async () => {
       const sut = new MongoSurveyRepository()
-      const response = await sut.loadAll()
+      const response = await sut.loadAll(fakeAccountId)
 
       expect(collectionStub).toHaveBeenCalledWith('surveys')
+      expect(aggregateStub).toHaveBeenCalled()
       expect(response).toEqual([fakeSurvey])
     })
 
@@ -105,7 +105,7 @@ describe('Mongo Survey Repository', () => {
       const sut = new MongoSurveyRepository()
       toArrayStub.mockResolvedValueOnce([])
 
-      const response = await sut.loadAll()
+      const response = await sut.loadAll(fakeAccountId)
 
       expect(collectionStub).toHaveBeenCalledWith('surveys')
       expect(response).toEqual([])

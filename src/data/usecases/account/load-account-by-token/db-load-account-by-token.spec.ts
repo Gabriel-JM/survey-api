@@ -38,9 +38,9 @@ describe('Db load account by token use case', () => {
       throw new Error()
     })
 
-    const promise = sut.load('any_token', 'any_role')
+    const account = await sut.load('any_token', 'any_role')
 
-    await expect(promise).rejects.toThrowError(Error)
+    expect(account).toBeNull()
   })
 
   it('should call LoadAccountByTokenRepository with correct values', async () => {

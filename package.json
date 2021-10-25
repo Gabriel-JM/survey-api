@@ -1,6 +1,6 @@
 {
   "name": "survey-api",
-  "version": "2.5.4",
+  "version": "2.5.5",
   "description": "",
   "private": true,
   "main": "index.js",

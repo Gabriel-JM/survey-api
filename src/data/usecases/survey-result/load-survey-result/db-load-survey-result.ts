@@ -9,8 +9,8 @@ export class DbLoadSurveyResultUsecase implements LoadSurveyResult {
     private readonly loadSurveyByIdRepository: LoadSurveyByIdRepository
   ) {}
 
-  async load (surveyId: string) {
-    let surveyResult = await this.loadSurveyResultRepository.loadBySurveyId(surveyId)
+  async load (surveyId: string, accountId: string) {
+    let surveyResult = await this.loadSurveyResultRepository.loadBySurveyId(surveyId, accountId)
 
     if (!surveyResult) {
       const survey = await this.loadSurveyByIdRepository.loadById(surveyId) as SurveyModel
@@ -19,7 +19,12 @@ export class DbLoadSurveyResultUsecase implements LoadSurveyResult {
         surveyId: survey.id,
         question: survey.question,
         answers: survey.answers
-          .map(answer => ({ ...answer, count: 0, percent: 0 })),
+          .map(answer => ({
+            ...answer,
+            count: 0,
+            percent: 0,
+            isCurrentAccountAnswer: false
+          })),
         date: survey.date
       }
     }

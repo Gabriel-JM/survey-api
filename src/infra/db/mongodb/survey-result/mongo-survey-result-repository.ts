@@ -5,7 +5,6 @@ import { ObjectId } from 'mongodb'
 import { MongoHelper, QueryBuilder } from '../helpers'
 import round from 'mongo-round'
 import { LoadSurveyResultRepository } from '@/data/protocols/db/survey-result/load-survey-result-repository'
-import { make24HexCharsId } from '@/infra/_test'
 
 export class MongoSurveyResultRepository implements SaveSurveyResultRepository, LoadSurveyResultRepository {
   async save (data: SaveSurveyResultParams): Promise<void> {
@@ -21,7 +20,7 @@ export class MongoSurveyResultRepository implements SaveSurveyResultRepository, 
     }, { upsert: true, returnDocument: 'after' })
   }
 
-  async loadBySurveyId (surveyId: string) {
+  async loadBySurveyId (surveyId: string, accountId: string) {
     const surveyResultCollection = await MongoHelper.getCollection('surveyResults')
     const query = new QueryBuilder()
       .match({
@@ -64,7 +63,7 @@ export class MongoSurveyResultRepository implements SaveSurveyResultRepository, 
           $push: {
             $cond: [
               {
-                $eq: ['$data.accountId', new ObjectId(make24HexCharsId())]
+                $eq: ['$data.accountId', new ObjectId(accountId)]
               },
               '$data.answer',
               '$invalid'

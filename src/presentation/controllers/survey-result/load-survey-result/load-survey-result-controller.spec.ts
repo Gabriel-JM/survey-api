@@ -28,7 +28,8 @@ describe('LoadSurveyResultController', () => {
   const fakeRequest = {
     params: {
       surveyId: 'any_id'
-    }
+    },
+    accountId: 'any_account_id'
   }
 
   it('should call LoadSurveyById with correct value', async () => {
@@ -62,7 +63,10 @@ describe('LoadSurveyResultController', () => {
     const { sut, loadSurveyResultStub } = makeSut()
     await sut.handle(fakeRequest)
 
-    expect(loadSurveyResultStub.load).toHaveBeenCalledWith(fakeRequest.params.surveyId)
+    expect(loadSurveyResultStub.load).toHaveBeenCalledWith(
+      fakeRequest.params.surveyId,
+      fakeRequest.accountId
+    )
   })
 
   it('shoudl return 500 if LoadSurveyResult throws', async () => {

@@ -28,9 +28,10 @@ describe('Db load survey result use case', () => {
 
   it('should call LoadSurveyResultRepository with correct values', async () => {
     const { sut, loadSurveyResultRepositoryStub } = makeSut()
-    await sut.load('any_id')
+    await sut.load('any_id', 'any_account_id')
 
-    expect(loadSurveyResultRepositoryStub.loadBySurveyId).toHaveBeenCalledWith('any_id')
+    expect(loadSurveyResultRepositoryStub.loadBySurveyId)
+      .toHaveBeenCalledWith('any_id', 'any_account_id')
   })
 
   it('should throw if LoadSurveyResultRepository throws', async () => {
@@ -39,7 +40,7 @@ describe('Db load survey result use case', () => {
       throw new Error()
     })
 
-    const promise = sut.load('any_id')
+    const promise = sut.load('any_id', 'any_account_id')
 
     await expect(promise).rejects.toThrowError(Error)
   })
@@ -48,7 +49,7 @@ describe('Db load survey result use case', () => {
     const { sut, loadSurveyResultRepositoryStub, loadSurveyByIdRepositoryStub } = makeSut()
     loadSurveyResultRepositoryStub.loadBySurveyId.mockResolvedValueOnce(null)
 
-    await sut.load('any_id')
+    await sut.load('any_id', 'any_account_id')
 
     expect(loadSurveyByIdRepositoryStub.loadById).toHaveBeenCalledWith('any_id')
   })
@@ -57,14 +58,22 @@ describe('Db load survey result use case', () => {
     const { sut, loadSurveyResultRepositoryStub } = makeSut()
     loadSurveyResultRepositoryStub.loadBySurveyId.mockResolvedValueOnce(null)
 
-    const surveyResult = await sut.load('any_id')
+    const surveyResult = await sut.load('any_id', 'any_account_id')
 
-    expect(surveyResult).toEqual(mockSurveyResultModel())
+    const defaultSurveyResultMock = mockSurveyResultModel()
+
+    expect(surveyResult).toEqual({
+      ...defaultSurveyResultMock,
+      answers: defaultSurveyResultMock.answers.map(answer => ({
+        ...answer,
+        isCurrentAccountAnswer: false
+      }))
+    })
   })
 
   it('should return a surveyResultModel on success', async () => {
     const { sut } = makeSut()
-    const response = await sut.load('any_id')
+    const response = await sut.load('any_id', 'any_account_id')
 
     expect(response).toEqual(mockSurveyResultModel(fakeDate))
   })

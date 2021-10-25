@@ -53,7 +53,7 @@ describe('Db save survey result use case', () => {
     await sut.save(fakeSaveSurveyResultParams)
 
     expect(loadSurveyResultRepositoryStub.loadBySurveyId)
-      .toHaveBeenCalledWith(fakeSaveSurveyResultParams.surveyId)
+      .toHaveBeenCalledWith(fakeSaveSurveyResultParams.surveyId, fakeSaveSurveyResultParams.accountId)
   })
 
   it('should throw if LoadSurveyResultRepository throws', async () => {

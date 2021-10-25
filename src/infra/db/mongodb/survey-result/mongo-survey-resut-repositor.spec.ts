@@ -13,7 +13,8 @@ const fakeSurveyResult = {
   answers: [{
     answer: 'any_answer',
     count: 1,
-    percent: 50
+    percent: 50,
+    isCurrentAccountAnswer: true
   }],
   date: fakeDate
 }
@@ -81,10 +82,11 @@ describe('Mongo survey result repository', () => {
 
   describe('loadBySurveyId()', () => {
     const surveyId = make24HexCharsId()
+    const accountId = make24HexCharsId()
 
     it('should load survey result by the given survey id', async () => {
       const sut = new MongoSurveyResultRepository()
-      const surveyResult = await sut.loadBySurveyId(surveyId)
+      const surveyResult = await sut.loadBySurveyId(surveyId, accountId)
 
       expect(getCollectionSpy).toHaveBeenCalledWith('surveyResults')
       expect(toArrayStub).toHaveBeenCalled()
@@ -95,7 +97,7 @@ describe('Mongo survey result repository', () => {
       const sut = new MongoSurveyResultRepository()
       toArrayStub.mockResolvedValueOnce(null)
 
-      const surveyResult = await sut.loadBySurveyId(surveyId)
+      const surveyResult = await sut.loadBySurveyId(surveyId, accountId)
 
       expect(getCollectionSpy).toHaveBeenCalledWith('surveyResults')
       expect(toArrayStub).toHaveBeenCalled()

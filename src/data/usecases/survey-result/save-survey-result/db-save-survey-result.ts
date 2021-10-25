@@ -10,7 +10,7 @@ export class DbSaveSurveyResultUsecase implements SaveSurveyResult {
 
   async save (survey: SaveSurveyResultParams) {
     await this.saveSurveyResultRepository.save(survey)
-    const surveyResult = await this.loadSurveyResultRepository.loadBySurveyId(survey.surveyId)
+    const surveyResult = await this.loadSurveyResultRepository.loadBySurveyId(survey.surveyId, survey.accountId)
 
     return surveyResult
   }

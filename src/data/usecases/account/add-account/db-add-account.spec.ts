@@ -65,12 +65,12 @@ describe('DbAddAccount Use Case', () => {
     await expect(sut.add(account)).rejects.toThrow()
   })
 
-  it('should return an account on success', async () => {
+  it('should return true on success', async () => {
     const { sut } = makeSut()
 
     const result = await sut.add(account)
 
-    expect(result).toEqual(fakeAccount)
+    expect(result).toEqual(true)
   })
 
   it('should call LoadAccountByEmailRepository with correct email', async () => {
@@ -88,6 +88,6 @@ describe('DbAddAccount Use Case', () => {
 
     const result = await sut.add(account)
 
-    expect(result).toBeNull()
+    expect(result).toBe(false)
   })
 })

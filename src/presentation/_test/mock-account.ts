@@ -1,11 +1,10 @@
-import { AccountModel } from '@/domain/models/account'
 import { AuthenticationModel } from '@/domain/models/authentication'
-import { fakeAccount } from '@/domain/_test'
+import { AddAccountResult } from '@/domain/usecases'
 
 export const addAccountStub = {
   add: jest.fn(
-    async () => await Promise.resolve(fakeAccount)
-  ) as jest.Mock<Promise<AccountModel | null>>
+    async () => await Promise.resolve(true)
+  ) as jest.Mock<Promise<AddAccountResult>>
 }
 
 export const authenticationStub = {

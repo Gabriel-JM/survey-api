@@ -26,25 +26,23 @@ function makeSut () {
 }
 
 describe('Log Decorator', () => {
-  const httpRequest = {
-    body: {
-      email: 'any_email@mail.com',
-      name: 'any_name',
-      password: 'any_password',
-      passwordConfirmation: 'any_password'
-    }
+  const request = {
+    email: 'any_email@mail.com',
+    name: 'any_name',
+    password: 'any_password',
+    passwordConfirmation: 'any_password'
   }
 
   it('should call controller handle with correct value', async () => {
     const { sut, controllerStub } = makeSut()
-    await sut.handle(httpRequest)
+    await sut.handle(request)
 
-    expect(controllerStub.handle).toHaveBeenCalledWith(httpRequest)
+    expect(controllerStub.handle).toHaveBeenCalledWith(request)
   })
 
   it('should return the same result of the controller', async () => {
     const { sut } = makeSut()
-    const response = await sut.handle(httpRequest)
+    const response = await sut.handle(request)
 
     expect(response).toEqual(httpResponseFixture)
   })
@@ -56,7 +54,7 @@ describe('Log Decorator', () => {
 
     controllerStub.handle.mockResolvedValueOnce(serverError(fakeError))
 
-    await sut.handle(httpRequest)
+    await sut.handle(request)
 
     expect(logErrorRepositoryStub.logError).toHaveBeenCalledWith('any_stack')
   })

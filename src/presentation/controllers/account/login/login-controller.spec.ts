@@ -17,20 +17,18 @@ function makeSut () {
 }
 
 describe('LoginController', () => {
-  const httpRequest = {
-    body: {
-      email: 'any_email@mail.com',
-      password: 'any_password'
-    }
+  const fakeRequest = {
+    email: 'any_email@mail.com',
+    password: 'any_password'
   }
 
   it('shoudl call Authentication with correct values', async () => {
     const { sut, authenticationStub } = makeSut()
 
-    await sut.handle(httpRequest)
+    await sut.handle(fakeRequest)
 
     expect(authenticationStub.auth).toHaveBeenCalledWith(
-      { ...httpRequest.body }
+      { ...fakeRequest }
     )
   })
 
@@ -38,7 +36,7 @@ describe('LoginController', () => {
     const { sut, authenticationStub } = makeSut()
     authenticationStub.auth.mockResolvedValueOnce(Promise.resolve(null))
 
-    const httpResponse = await sut.handle(httpRequest)
+    const httpResponse = await sut.handle(fakeRequest)
 
     expect(httpResponse).toEqual(unauthorized())
   })
@@ -49,7 +47,7 @@ describe('LoginController', () => {
     error.stack = undefined
     authenticationStub.auth.mockRejectedValueOnce(error)
 
-    const httpResponse = await sut.handle(httpRequest)
+    const httpResponse = await sut.handle(fakeRequest)
 
     expect(httpResponse).toEqual(serverError(error))
   })
@@ -57,7 +55,7 @@ describe('LoginController', () => {
   it('should return 200 if valid credentials are provided', async () => {
     const { sut } = makeSut()
 
-    const httpResponse = await sut.handle(httpRequest)
+    const httpResponse = await sut.handle(fakeRequest)
 
     expect(httpResponse).toEqual(ok({
       accessToken: 'any_access_token',
@@ -68,16 +66,16 @@ describe('LoginController', () => {
   it('shoudl call Validation with correct value', async () => {
     const { sut, validationStub } = makeSut()
 
-    await sut.handle(httpRequest)
+    await sut.handle(fakeRequest)
 
-    expect(validationStub.validate).toHaveBeenCalledWith(httpRequest.body)
+    expect(validationStub.validate).toHaveBeenCalledWith(fakeRequest)
   })
 
   it('should return 400 if Validation returns an error', async () => {
     const { sut, validationStub } = makeSut()
     validationStub.validate.mockReturnValueOnce(new MissingParamError('any_field'))
 
-    const httpResponse = await sut.handle(httpRequest)
+    const httpResponse = await sut.handle(fakeRequest)
     expect(httpResponse).toEqual(badRequest(new MissingParamError('any_field')))
   })
 })

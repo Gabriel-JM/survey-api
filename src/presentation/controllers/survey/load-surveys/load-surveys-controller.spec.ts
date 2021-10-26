@@ -30,10 +30,10 @@ describe('Load Surveys Controller', () => {
 
   it('should call LoadSurveys with correct value', async () => {
     const { sut, loadSurveysStub } = makeSut()
-    const httpRequest = mockRequestParams()
-    await sut.handle(httpRequest)
+    const request = mockRequestParams()
+    await sut.handle(request)
 
-    expect(loadSurveysStub.load).toHaveBeenCalledWith(httpRequest.accountId)
+    expect(loadSurveysStub.load).toHaveBeenCalledWith(request.accountId)
   })
 
   it('should return 200 on success', async () => {

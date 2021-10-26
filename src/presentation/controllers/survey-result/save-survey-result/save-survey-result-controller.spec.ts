@@ -27,12 +27,8 @@ function makeSut () {
 describe('Save survey result controller', () => {
   const fakeRequest = {
     accountId: 'any_account_id',
-    params: {
-      surveyId: 'any_id'
-    },
-    body: {
-      answer: 'any_answer'
-    }
+    surveyId: 'any_id',
+    answer: 'any_answer'
   }
 
   beforeAll(() => MockDate.set(fakeDate))
@@ -68,10 +64,9 @@ describe('Save survey result controller', () => {
   it('should return 403 if an invalid answer is provided', async () => {
     const { sut } = makeSut()
     const response = await sut.handle({
-      params: {},
-      body: {
-        answer: 'wrong_answer'
-      }
+      surveyId: '',
+      accountId: '',
+      answer: 'wrong_answer'
     })
 
     expect(response).toEqual(forbidden(new InvalidParamError('answer')))

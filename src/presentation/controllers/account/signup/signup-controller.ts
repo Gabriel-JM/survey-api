@@ -1,24 +1,31 @@
 import { AddAccount, Authentication } from '@/domain/usecases'
-import { Controller, HttpRequest, HttpResponse, Validation } from '@/presentation/protocols'
+import { Controller, HttpResponse, Validation } from '@/presentation/protocols'
 import { EmailInUseError } from '@/presentation/errors'
 import { badRequest, forbidden, ok, serverError } from '../../../helpers/http/http-helper'
 
-export class SignUpController implements Controller {
+interface ControllerRequest {
+  name: string
+  email: string
+  password: string
+  passwordConfirmation: string
+}
+
+export class SignUpController implements Controller<ControllerRequest> {
   constructor (
     private readonly addAccount: AddAccount,
     private readonly validation: Validation,
     private readonly authentication: Authentication
   ) {}
 
-  async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
+  async handle (request: ControllerRequest): Promise<HttpResponse> {
     try {
-      const validationError = this.validation.validate(httpRequest.body)
+      const validationError = this.validation.validate(request)
 
       if (validationError) {
         return badRequest(validationError)
       }
 
-      const { name, email, password } = httpRequest.body
+      const { name, email, password } = request
 
       const account = await this.addAccount.add({
         name,

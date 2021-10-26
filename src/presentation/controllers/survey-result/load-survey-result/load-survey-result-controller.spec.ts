@@ -26,9 +26,7 @@ function makeSut () {
 
 describe('LoadSurveyResultController', () => {
   const fakeRequest = {
-    params: {
-      surveyId: 'any_id'
-    },
+    surveyId: 'any_id',
     accountId: 'any_account_id'
   }
 
@@ -36,7 +34,7 @@ describe('LoadSurveyResultController', () => {
     const { sut, loadSurveyByIdStub } = makeSut()
     await sut.handle(fakeRequest)
 
-    expect(loadSurveyByIdStub.loadById).toHaveBeenCalledWith(fakeRequest.params.surveyId)
+    expect(loadSurveyByIdStub.loadById).toHaveBeenCalledWith(fakeRequest.surveyId)
   })
 
   it('should return 403 if LoadSurveyById returns null', async () => {
@@ -64,7 +62,7 @@ describe('LoadSurveyResultController', () => {
     await sut.handle(fakeRequest)
 
     expect(loadSurveyResultStub.load).toHaveBeenCalledWith(
-      fakeRequest.params.surveyId,
+      fakeRequest.surveyId,
       fakeRequest.accountId
     )
   })

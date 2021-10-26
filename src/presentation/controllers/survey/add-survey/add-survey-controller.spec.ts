@@ -19,14 +19,11 @@ function makeSut () {
 describe('Add Survey Controller', () => {
   const date = new Date()
   const fakeHttpRequest = {
-    body: {
-      question: 'any_question',
-      answers: [{
-        image: 'any_image',
-        answer: 'any_answer'
-      }],
-      date
-    }
+    question: 'any_question',
+    answers: [{
+      image: 'any_image',
+      answer: 'any_answer'
+    }]
   }
 
   beforeAll(() => {
@@ -42,7 +39,7 @@ describe('Add Survey Controller', () => {
 
     await sut.handle(fakeHttpRequest)
 
-    expect(validationStub.validate).toHaveBeenCalledWith(fakeHttpRequest.body)
+    expect(validationStub.validate).toHaveBeenCalledWith(fakeHttpRequest)
   })
 
   it('should return 400 if validation returns an error', async () => {
@@ -59,7 +56,7 @@ describe('Add Survey Controller', () => {
 
     await sut.handle(fakeHttpRequest)
 
-    expect(addSurveyStub.add).toHaveBeenCalledWith(fakeHttpRequest.body)
+    expect(addSurveyStub.add).toHaveBeenCalledWith({ ...fakeHttpRequest, date })
   })
 
   it('should return 500 if AddSurvey throws', async () => {

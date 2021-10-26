@@ -21,14 +21,14 @@ function makeSut (role?: string) {
 
 describe('Auth Middleware', () => {
   const fakeRequest = {
-    headers: {
-      'x-access-token': 'any_token'
-    }
+    accessToken: 'any_token'
   }
 
   it('should return 403 if no x-access-token exists in headers', async () => {
     const { sut } = makeSut()
-    const httpResponse = await sut.handle({})
+    const httpResponse = await sut.handle({
+      accessToken: ''
+    })
 
     expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
   })

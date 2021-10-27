@@ -126,7 +126,7 @@ describe('Account Mongo Repository', () => {
       expect(findOneStub).toHaveBeenCalledWith({
         accessToken: 'any_token',
         $or: [{ role: undefined }, { role: 'admin' }]
-      })
+      }, { projection: { _id: 1 } })
       expect(account).toEqual(fakeMongoAccount)
     })
 
@@ -138,7 +138,7 @@ describe('Account Mongo Repository', () => {
       expect(findOneStub).toHaveBeenCalledWith({
         accessToken: 'any_token',
         $or: [{ role: 'admin' }, { role: 'admin' }]
-      })
+      }, { projection: { _id: 1 } })
       expect(account).toEqual(fakeMongoAccount)
     })
 
@@ -157,7 +157,7 @@ describe('Account Mongo Repository', () => {
       expect(findOneStub).toHaveBeenCalledWith({
         accessToken: 'any_token',
         $or: [{ role: undefined }, { role: 'admin' }]
-      })
+      }, { projection: { _id: 1 } })
       expect(account).toEqual(null)
     })
 

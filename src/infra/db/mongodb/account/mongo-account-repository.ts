@@ -1,6 +1,6 @@
 import { AddAccountRepository, AddAccountRepositoryResult, AddAccountRespositoryParams } from '@/data/protocols/db/account/add-account-repository'
 import { LoadAccountByEmailRepository } from '@/data/protocols/db/account/load-account-by-email-repository'
-import { LoadAccountByTokenRepository } from '@/data/protocols/db/account/load-account-by-token-repository'
+import { LoadAccountByTokenRepository, LoadAccountByTokenRepositoryResult } from '@/data/protocols/db/account/load-account-by-token-repository'
 import { UpdateAccessTokenRepository } from '@/data/protocols/db/account/update-access-token-repository'
 import { AccountModel } from '@/domain/models/account'
 import { MongoHelper } from '../helpers/mongo-helper'
@@ -20,11 +20,13 @@ export class MongoAccountRepository implements AccountRepository {
       : null
   }
 
-  async loadByToken (token: string, role?: string): Promise<AccountModel | null> {
+  async loadByToken (token: string, role?: string): Promise<LoadAccountByTokenRepositoryResult> {
     const accountsCollection = await MongoHelper.getCollection('accounts')
     const account = await accountsCollection.findOne({
       accessToken: token,
       $or: [{ role }, { role: 'admin' }]
+    }, {
+      projection: { _id: 1 }
     })
 
     return account

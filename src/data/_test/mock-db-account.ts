@@ -1,5 +1,6 @@
 import { AccountModel } from '@/domain/models/account'
 import { fakeAccount } from '@/domain/_test'
+import { LoadAccountByTokenRepositoryResult } from '../protocols/db/account/load-account-by-token-repository'
 import { ReturnValue } from './helpers/types'
 
 export const addAccountRepositoryStub = {
@@ -15,7 +16,7 @@ export const mockLoadAccountByEmailRepository = ({
 })
 
 export const loadAccountByTokenRepositoryStub = {
-  loadByToken: jest.fn<Promise<AccountModel | null>, []>(
+  loadByToken: jest.fn<Promise<LoadAccountByTokenRepositoryResult>, []>(
     () => Promise.resolve(fakeAccount)
   )
 }

@@ -1,26 +1,25 @@
 import {
   addAccountRepositoryStub,
-  fakeLoadAccountByEmailRepositoryResult,
   hasherStub,
-  mockLoadAccountByEmailRepository
+  mockCheckAccountByEmailRepository
 } from '@/data/_test'
 import { fakeAddAccountParams } from '@/domain/_test'
 import { DbAddAccountUseCase } from './db-add-account'
 
 function makeSut () {
-  const loadAccountByEmailRepositoryStub = mockLoadAccountByEmailRepository(null)
+  const checkAccountByEmailRepositoryStub = mockCheckAccountByEmailRepository()
 
   const sut = new DbAddAccountUseCase(
     hasherStub,
     addAccountRepositoryStub,
-    loadAccountByEmailRepositoryStub
+    checkAccountByEmailRepositoryStub
   )
 
   return {
     sut,
     hasherStub,
     addAccountRepositoryStub,
-    loadAccountByEmailRepositoryStub
+    checkAccountByEmailRepositoryStub
   }
 }
 
@@ -81,18 +80,18 @@ describe('DbAddAccount Use Case', () => {
     expect(result).toEqual(true)
   })
 
-  it('should call LoadAccountByEmailRepository with correct email', async () => {
-    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
+  it('should call CheckAccountByEmailRepository with correct email', async () => {
+    const { sut, checkAccountByEmailRepositoryStub } = makeSut()
 
     await sut.add(account)
 
-    expect(loadAccountByEmailRepositoryStub.loadByEmail)
+    expect(checkAccountByEmailRepositoryStub.checkByEmail)
       .toHaveBeenCalledWith(account.email)
   })
 
-  it('should return null if LoadAccountByEmailRepository not returns null', async () => {
-    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
-    loadAccountByEmailRepositoryStub.loadByEmail.mockResolvedValueOnce(fakeLoadAccountByEmailRepositoryResult)
+  it('should return null if CheckAccountByEmailRepository returns true', async () => {
+    const { sut, checkAccountByEmailRepositoryStub } = makeSut()
+    checkAccountByEmailRepositoryStub.checkByEmail.mockResolvedValueOnce(true)
 
     const result = await sut.add(account)
 

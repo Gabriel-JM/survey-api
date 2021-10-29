@@ -1,19 +1,19 @@
 import { AddAccount, AddAccountParams, AddAccountResult } from '@/domain/usecases'
 import { AddAccountRepository } from '@/data/protocols/db/account/add-account-repository'
 import { Hasher } from '@/data/protocols/criptography/hasher'
-import { LoadAccountByEmailRepository } from '@/data/protocols/db/account/load-account-by-email-repository'
+import { CheckAccountByEmailRepository } from '@/data/protocols/db/account/check-account-by-email-repository'
 
 export class DbAddAccountUseCase implements AddAccount {
   constructor (
     private readonly encrypter: Hasher,
     private readonly addAccountRepository: AddAccountRepository,
-    private readonly loadAccountByEmailRepository: LoadAccountByEmailRepository
+    private readonly checkAccountByEmailRepository: CheckAccountByEmailRepository
   ) { }
 
   async add (accountData: AddAccountParams): Promise<AddAccountResult> {
-    const inDbAccount = await this.loadAccountByEmailRepository.loadByEmail(accountData.email)
+    const hasAccount = await this.checkAccountByEmailRepository.checkByEmail(accountData.email)
 
-    if (inDbAccount) return false
+    if (hasAccount) return false
 
     const hashedPassword = await this.encrypter.hash(accountData.password)
 

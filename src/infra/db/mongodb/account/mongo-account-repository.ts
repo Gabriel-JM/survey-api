@@ -1,4 +1,5 @@
 import { AddAccountRepository, AddAccountRepositoryResult, AddAccountRespositoryParams } from '@/data/protocols/db/account/add-account-repository'
+import { CheckAccountByEmailRepository, CheckAccountByEmailRepositoryResult } from '@/data/protocols/db/account/check-account-by-email-repository'
 import { LoadAccountByEmailRepository, LoadAccountByEmailRepositoryResult } from '@/data/protocols/db/account/load-account-by-email-repository'
 import { LoadAccountByTokenRepository, LoadAccountByTokenRepositoryResult } from '@/data/protocols/db/account/load-account-by-token-repository'
 import { UpdateAccessTokenRepository } from '@/data/protocols/db/account/update-access-token-repository'
@@ -6,6 +7,7 @@ import { MongoHelper } from '../helpers/mongo-helper'
 
 type AccountRepository = AddAccountRepository
 & LoadAccountByEmailRepository
+& CheckAccountByEmailRepository
 & UpdateAccessTokenRepository
 & LoadAccountByTokenRepository
 
@@ -26,6 +28,20 @@ export class MongoAccountRepository implements AccountRepository {
     return account
       ? MongoHelper.map<LoadAccountByEmailRepositoryResult>(account)
       : null
+  }
+
+  async checkByEmail (email: string): Promise<CheckAccountByEmailRepositoryResult> {
+    const accountsCollection = await MongoHelper.getCollection('accounts')
+    const account = await accountsCollection.findOne(
+      { email },
+      {
+        projection: {
+          _id: 1
+        }
+      }
+    )
+
+    return account !== null
   }
 
   async loadByToken (token: string, role?: string): Promise<LoadAccountByTokenRepositoryResult> {

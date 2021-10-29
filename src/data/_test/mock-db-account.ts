@@ -1,3 +1,4 @@
+import { CheckAccountByEmailRepositoryResult } from '../protocols/db/account/check-account-by-email-repository'
 import { LoadAccountByEmailRepositoryResult } from '../protocols/db/account/load-account-by-email-repository'
 import { LoadAccountByTokenRepositoryResult } from '../protocols/db/account/load-account-by-token-repository'
 
@@ -17,6 +18,14 @@ export const mockLoadAccountByEmailRepository = (
   loadByEmail: jest.fn(
     () => Promise.resolve(returnValue)
   ) as jest.Mock<Promise<LoadAccountByEmailRepositoryResult>>
+})
+
+export const mockCheckAccountByEmailRepository = (
+  returnValue: CheckAccountByEmailRepositoryResult = false
+) => ({
+  checkByEmail: jest.fn(
+    () => Promise.resolve(returnValue)
+  ) as jest.Mock<Promise<CheckAccountByEmailRepositoryResult>>
 })
 
 export const fakeLoadAccountByTokenRepositoryResult = {

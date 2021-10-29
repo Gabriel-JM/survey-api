@@ -107,6 +107,32 @@ describe('Account Mongo Repository', () => {
     })
   })
 
+  describe('checkByEmail()', () => {
+    it('should return an account on checkByEmail success', async () => {
+      const sut = new MongoAccountRepository()
+      const hasAccount = await sut.checkByEmail('any_email@mail.com')
+
+      expect(collectionStub).toHaveBeenCalledWith('accounts')
+      expect(findOneStub).toHaveBeenCalledWith(
+        { email: 'any_email@mail.com' },
+        {
+          projection: {
+            _id: 1
+          }
+        }
+      )
+      expect(hasAccount).toBe(true)
+    })
+
+    it('should return false if load by email fails', async () => {
+      const sut = new MongoAccountRepository()
+      findOneStub.mockResolvedValueOnce(null as unknown as never)
+      const hasAccount = await sut.checkByEmail('any_email@mail.com')
+
+      expect(hasAccount).toBe(false)
+    })
+  })
+
   describe('updateAccessToken()', () => {
     it('should update the account accessToken on updateAccessToken success', async () => {
       const sut = new MongoAccountRepository()

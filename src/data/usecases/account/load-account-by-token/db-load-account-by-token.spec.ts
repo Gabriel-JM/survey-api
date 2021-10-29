@@ -1,5 +1,4 @@
 import { decrypterStub, loadAccountByTokenRepositoryStub } from '@/data/_test'
-import { fakeAccount } from '@/domain/_test'
 import { DbLoadAccountByTokenUseCase } from './db-load-account-by-token'
 
 function makeSut () {
@@ -75,6 +74,6 @@ describe('Db load account by token use case', () => {
     const { sut } = makeSut()
     const response = await sut.load('any_token', 'any_role')
 
-    expect(response).toEqual(fakeAccount)
+    expect(response).toEqual({ id: 'any_id' })
   })
 })

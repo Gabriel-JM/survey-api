@@ -1,5 +1,5 @@
-import { encrypterStub, fakeToken, hashComparerStub, mockLoadAccountByEmailRepository, updateAccessTokenRepositoryStub } from '@/data/_test'
-import { fakeAccount, fakeAuthenticationParams } from '@/domain/_test'
+import { encrypterStub, fakeLoadAccountByEmailRepositoryResult, fakeToken, hashComparerStub, mockLoadAccountByEmailRepository, updateAccessTokenRepositoryStub } from '@/data/_test'
+import { fakeAuthenticationParams } from '@/domain/_test'
 import { DbAuthenticationUseCase } from './db-authentication'
 
 function makeSut () {
@@ -57,7 +57,10 @@ describe('Database Authentication use case', () => {
     await sut.auth(fakeAuthenticationParams)
 
     expect(hashComparerStub.compare)
-      .toHaveBeenCalledWith(fakeAuthenticationParams.password, fakeAccount.password)
+      .toHaveBeenCalledWith(
+        fakeAuthenticationParams.password,
+        fakeLoadAccountByEmailRepositoryResult.password
+      )
   })
 
   it('should throw if HashComparer throws', async () => {
@@ -83,7 +86,7 @@ describe('Database Authentication use case', () => {
 
     await sut.auth(fakeAuthenticationParams)
 
-    expect(encrypterStub.encrypt).toHaveBeenCalledWith(fakeAccount.id)
+    expect(encrypterStub.encrypt).toHaveBeenCalledWith(fakeLoadAccountByEmailRepositoryResult.id)
   })
 
   it('should throw if Encrypter throws', async () => {
@@ -102,7 +105,7 @@ describe('Database Authentication use case', () => {
 
     expect(model).toEqual({
       accessToken: fakeToken,
-      name: fakeAccount.name
+      name: fakeLoadAccountByEmailRepositoryResult.name
     })
   })
 
@@ -112,7 +115,7 @@ describe('Database Authentication use case', () => {
     await sut.auth(fakeAuthenticationParams)
 
     expect(updateAccessTokenRepositoryStub.updateAccessToken)
-      .toHaveBeenCalledWith(fakeAccount.id, fakeToken)
+      .toHaveBeenCalledWith(fakeLoadAccountByEmailRepositoryResult.id, fakeToken)
   })
 
   it('should throw if UpdateAccessTokenRepository throws', async () => {

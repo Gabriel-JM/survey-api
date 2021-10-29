@@ -17,11 +17,11 @@ export class DbAddAccountUseCase implements AddAccount {
 
     const hashedPassword = await this.encrypter.hash(accountData.password)
 
-    await this.addAccountRepository.add({
+    const isValid = await this.addAccountRepository.add({
       ...accountData,
       password: hashedPassword
     })
 
-    return true
+    return isValid
   }
 }

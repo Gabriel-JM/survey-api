@@ -1,23 +1,31 @@
-import { AccountModel } from '@/domain/models/account'
-import { fakeAccount } from '@/domain/_test'
+import { LoadAccountByEmailRepositoryResult } from '../protocols/db/account/load-account-by-email-repository'
 import { LoadAccountByTokenRepositoryResult } from '../protocols/db/account/load-account-by-token-repository'
-import { ReturnValue } from './helpers/types'
 
 export const addAccountRepositoryStub = {
-  add: jest.fn(async () => await Promise.resolve(fakeAccount))
+  add: jest.fn(async () => await Promise.resolve(true))
 }
 
-export const mockLoadAccountByEmailRepository = ({
-  returnValue
-}: ReturnValue<AccountModel | null> = { returnValue: fakeAccount }) => ({
+export const fakeLoadAccountByEmailRepositoryResult = {
+  id: 'any_id',
+  name: 'any_name',
+  password: 'any_password'
+}
+
+export const mockLoadAccountByEmailRepository = (
+  returnValue: LoadAccountByEmailRepositoryResult = fakeLoadAccountByEmailRepositoryResult
+) => ({
   loadByEmail: jest.fn(
     () => Promise.resolve(returnValue)
-  ) as jest.Mock<Promise<AccountModel | null>>
+  ) as jest.Mock<Promise<LoadAccountByEmailRepositoryResult>>
 })
+
+export const fakeLoadAccountByTokenRepositoryResult = {
+  id: 'any_id'
+}
 
 export const loadAccountByTokenRepositoryStub = {
   loadByToken: jest.fn<Promise<LoadAccountByTokenRepositoryResult>, []>(
-    () => Promise.resolve(fakeAccount)
+    () => Promise.resolve(fakeLoadAccountByTokenRepositoryResult)
   )
 }
 

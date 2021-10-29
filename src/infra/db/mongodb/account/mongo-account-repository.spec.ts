@@ -23,7 +23,6 @@ const insertOneStub = jest.fn(() => Promise.resolve({
 const findOneStub = (jest.fn(() => Promise.resolve({
   _id: 'valid_id',
   name: 'any_name',
-  email: 'any_email@mail.com',
   password: 'any_password'
 })) as jest.Mock<unknown | null>)
 
@@ -63,7 +62,7 @@ describe('Account Mongo Repository', () => {
   describe('add()', () => {
     it('should return an account on add success', async () => {
       const sut = new MongoAccountRepository()
-      const account = await sut.add({
+      const isValid = await sut.add({
         name: 'any_name',
         email: 'any_email@mail.com',
         password: 'any_password'
@@ -76,7 +75,7 @@ describe('Account Mongo Repository', () => {
         password: 'any_password'
       })
 
-      expect(account).toEqual(fakeMongoAccount)
+      expect(isValid).toEqual(true)
     })
   })
 
@@ -86,9 +85,16 @@ describe('Account Mongo Repository', () => {
       const account = await sut.loadByEmail('any_email@mail.com')
 
       expect(collectionStub).toHaveBeenCalledWith('accounts')
-      expect(findOneStub).toHaveBeenCalledWith({
-        email: 'any_email@mail.com'
-      })
+      expect(findOneStub).toHaveBeenCalledWith(
+        { email: 'any_email@mail.com' },
+        {
+          projection: {
+            _id: 1,
+            name: 1,
+            password: 1
+          }
+        }
+      )
       expect(account).toEqual(fakeMongoAccount)
     })
 

@@ -1,8 +1,7 @@
 import { AddAccountRepository, AddAccountRepositoryResult, AddAccountRespositoryParams } from '@/data/protocols/db/account/add-account-repository'
-import { LoadAccountByEmailRepository } from '@/data/protocols/db/account/load-account-by-email-repository'
+import { LoadAccountByEmailRepository, LoadAccountByEmailRepositoryResult } from '@/data/protocols/db/account/load-account-by-email-repository'
 import { LoadAccountByTokenRepository, LoadAccountByTokenRepositoryResult } from '@/data/protocols/db/account/load-account-by-token-repository'
 import { UpdateAccessTokenRepository } from '@/data/protocols/db/account/update-access-token-repository'
-import { AccountModel } from '@/domain/models/account'
 import { MongoHelper } from '../helpers/mongo-helper'
 
 type AccountRepository = AddAccountRepository
@@ -11,12 +10,21 @@ type AccountRepository = AddAccountRepository
 & LoadAccountByTokenRepository
 
 export class MongoAccountRepository implements AccountRepository {
-  async loadByEmail (email: string): Promise<AccountModel | null> {
+  async loadByEmail (email: string): Promise<LoadAccountByEmailRepositoryResult> {
     const accountsCollection = await MongoHelper.getCollection('accounts')
-    const account = await accountsCollection.findOne({ email })
+    const account = await accountsCollection.findOne(
+      { email },
+      {
+        projection: {
+          _id: 1,
+          name: 1,
+          password: 1
+        }
+      }
+    )
 
     return account
-      ? MongoHelper.map<AccountModel>(account)
+      ? MongoHelper.map<LoadAccountByEmailRepositoryResult>(account)
       : null
   }
 
@@ -30,7 +38,7 @@ export class MongoAccountRepository implements AccountRepository {
     })
 
     return account
-      ? MongoHelper.map<AccountModel>(account)
+      ? MongoHelper.map<LoadAccountByTokenRepositoryResult>(account)
       : null
   }
 
@@ -40,7 +48,7 @@ export class MongoAccountRepository implements AccountRepository {
 
     const [account] = operationResult.ops
 
-    return MongoHelper.map<AccountModel>(account)
+    return account !== null
   }
 
   async updateAccessToken (id: string, token: string): Promise<void> {

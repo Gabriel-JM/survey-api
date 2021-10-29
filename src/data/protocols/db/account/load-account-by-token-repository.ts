@@ -1,6 +1,6 @@
-import { AccountModel } from '@/domain/models/account'
-
-export type LoadAccountByTokenRepositoryResult = AccountModel | null
+export type LoadAccountByTokenRepositoryResult = null | {
+  id: string
+}
 
 export interface LoadAccountByTokenRepository {
   loadByToken(token: string, role?: string): Promise<LoadAccountByTokenRepositoryResult>

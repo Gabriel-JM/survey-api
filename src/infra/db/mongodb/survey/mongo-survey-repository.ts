@@ -1,7 +1,6 @@
 import { AddSurveyRepository, AddSurveyRepositoryParams } from '@/data/protocols/db/survey/add-survey-repository'
-import { LoadSurveyByIdRepository } from '@/data/protocols/db/survey/load-survey-by-id-repository'
+import { LoadSurveyByIdRepository, LoadSurveyByIdRepositoryResult } from '@/data/protocols/db/survey/load-survey-by-id-repository'
 import { LoadSurveysRepository } from '@/data/protocols/db/survey/load-surveys-repository'
-import { SurveyModel } from '@/domain/models/survey'
 import { ObjectId } from 'bson'
 import { QueryBuilder } from '../helpers'
 import { MongoHelper } from '../helpers/mongo-helper'
@@ -52,7 +51,7 @@ export class MongoSurveyRepository implements AddSurveyRepository, LoadSurveysRe
     const survey = await surveysCollection.findOne({ _id: new ObjectId(id) })
 
     return survey
-      ? MongoHelper.map<SurveyModel>(survey)
+      ? MongoHelper.map<LoadSurveyByIdRepositoryResult>(survey)
       : null
   }
 }

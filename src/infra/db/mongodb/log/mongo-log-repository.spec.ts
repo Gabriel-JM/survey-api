@@ -1,4 +1,5 @@
 import { MongoLogRepository } from './mongo-log-repository'
+import MockDate from 'mockdate'
 
 const insertOneStub = jest.fn()
 
@@ -36,10 +37,15 @@ jest.mock('../helpers/mongo-helper', () => {
 })
 
 describe('Mongo Log Repository', () => {
+  const date = new Date()
+
+  beforeAll(() => MockDate.set(date))
+
+  afterAll(() => MockDate.reset())
+
   it('should create an error log on success', async () => {
     const sut = new MongoLogRepository()
     await sut.logError('any_error')
-    const date = new Date()
 
     expect(insertOneStub).toHaveBeenCalledWith({
       stack: 'any_error',

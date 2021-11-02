@@ -1,5 +1,4 @@
-import { AuthenticationModel } from '@/domain/models/authentication'
-import { AddAccountResult } from '@/domain/usecases'
+import { AddAccountResult, AuthenticationResult } from '@/domain/usecases'
 
 export const addAccountStub = {
   add: jest.fn(
@@ -13,5 +12,5 @@ export const authenticationStub = {
       accessToken: 'any_access_token',
       name: 'any_name'
     })
-  ) as jest.Mock<Promise<AuthenticationModel | null>>
+  ) as jest.Mock<Promise<AuthenticationResult>>
 }

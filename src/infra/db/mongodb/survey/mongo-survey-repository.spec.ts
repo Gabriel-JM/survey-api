@@ -18,7 +18,7 @@ const fakeMongoSurvey = {
   date: fakeSurvey.date
 }
 
-const toArrayStub = jest.fn(() => Promise.resolve([fakeMongoSurvey]))
+const toArrayStub = jest.fn<Promise<unknown>, []>(() => Promise.resolve([fakeMongoSurvey]))
 const findOneStub = jest.fn<Promise<MongoSurveyModel|null>, []>(() => Promise.resolve(fakeMongoSurvey))
 const aggregateStub = jest.fn(() => ({ toArray: toArrayStub }))
 
@@ -137,6 +137,37 @@ describe('Mongo Survey Repository', () => {
       expect(findOneStub).toHaveBeenCalledWith({ _id: new ObjectId(id) })
       expect(mapSpy).not.toHaveBeenCalledWith(fakeMongoSurvey)
       expect(response).toBeNull()
+    })
+  })
+
+  describe('loadAnswers()', () => {
+    it('should load the answers by survey id on success', async () => {
+      const sut = new MongoSurveyRepository()
+      const id = make24HexCharsId()
+
+      toArrayStub.mockResolvedValueOnce([{
+        answers: ['any_answer']
+      }])
+
+      const response = await sut.loadAnswers(id)
+
+      expect(collectionStub).toHaveBeenCalledWith('surveys')
+      expect(aggregateStub).toHaveBeenCalled()
+      expect(toArrayStub).toHaveBeenCalled()
+      expect(response).toEqual(['any_answer'])
+    })
+
+    it('should return empty array if no survey was found by the given id', async () => {
+      const sut = new MongoSurveyRepository()
+      toArrayStub.mockResolvedValueOnce([])
+
+      const id = make24HexCharsId()
+      const response = await sut.loadAnswers(id)
+
+      expect(collectionStub).toHaveBeenCalledWith('surveys')
+      expect(aggregateStub).toHaveBeenCalled()
+      expect(toArrayStub).toHaveBeenCalled()
+      expect(response).toEqual([])
     })
   })
 

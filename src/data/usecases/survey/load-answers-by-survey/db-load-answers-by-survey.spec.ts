@@ -1,29 +1,28 @@
-import { mockLoadSurveyByIdRepository } from '@/data/_test'
-import { mockSurveyModel } from '@/domain/_test'
+import { mockLoadAnswersBySurveyRepository } from '@/data/_test'
 import { DbLoadAnswersBySurveyUsecase } from './db-load-answers-by-survey'
 
 function makeSut () {
-  const loadSurveyByIdRepositoryStub = mockLoadSurveyByIdRepository()
+  const loadAnswersBySurveyRepositoryStub = mockLoadAnswersBySurveyRepository()
 
-  const sut = new DbLoadAnswersBySurveyUsecase(loadSurveyByIdRepositoryStub)
+  const sut = new DbLoadAnswersBySurveyUsecase(loadAnswersBySurveyRepositoryStub)
 
   return {
     sut,
-    loadSurveyByIdRepositoryStub
+    loadAnswersBySurveyRepositoryStub
   }
 }
 
 describe('Db load answers by survey use case', () => {
   it('should call LoadSurveyByIdRepository with correct values', async () => {
-    const { sut, loadSurveyByIdRepositoryStub } = makeSut()
+    const { sut, loadAnswersBySurveyRepositoryStub } = makeSut()
     await sut.loadAnswers('any_id')
 
-    expect(loadSurveyByIdRepositoryStub.loadById).toHaveBeenCalledWith('any_id')
+    expect(loadAnswersBySurveyRepositoryStub.loadAnswers).toHaveBeenCalledWith('any_id')
   })
 
-  it('should return empty array if LoadSurveyByIdRepository returns null', async () => {
-    const { sut, loadSurveyByIdRepositoryStub } = makeSut()
-    loadSurveyByIdRepositoryStub.loadById.mockResolvedValueOnce(null)
+  it('should return empty array if LoadSurveyByIdRepository returns empty array', async () => {
+    const { sut, loadAnswersBySurveyRepositoryStub } = makeSut()
+    loadAnswersBySurveyRepositoryStub.loadAnswers.mockResolvedValueOnce([])
 
     const response = await sut.loadAnswers('any_id')
 
@@ -31,20 +30,23 @@ describe('Db load answers by survey use case', () => {
   })
 
   it('should return a list of answers on success', async () => {
-    const { sut } = makeSut()
-    const fakeSurvey = mockSurveyModel()
+    const { sut, loadAnswersBySurveyRepositoryStub } = makeSut()
+    loadAnswersBySurveyRepositoryStub.loadAnswers.mockResolvedValueOnce([
+      'any_answer',
+      'other_answer'
+    ])
 
     const answers = await sut.loadAnswers('any_id')
 
     expect(answers).toEqual([
-      fakeSurvey.answers[0].answer,
-      fakeSurvey.answers[1].answer
+      'any_answer',
+      'other_answer'
     ])
   })
 
   it('should throw if LoadSurveyByIdRepository throws', async () => {
-    const { sut, loadSurveyByIdRepositoryStub } = makeSut()
-    loadSurveyByIdRepositoryStub.loadById.mockImplementationOnce(() => {
+    const { sut, loadAnswersBySurveyRepositoryStub } = makeSut()
+    loadAnswersBySurveyRepositoryStub.loadAnswers.mockImplementationOnce(() => {
       throw new Error()
     })
 

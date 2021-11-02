@@ -78,6 +78,10 @@ describe('Mongo Survey Repository', () => {
     date: new Date()
   }
 
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   describe('add()', () => {
     it('should add a survey on success', async () => {
       const sut = new MongoSurveyRepository()
@@ -131,8 +135,38 @@ describe('Mongo Survey Repository', () => {
       const response = await sut.loadById(id)
 
       expect(findOneStub).toHaveBeenCalledWith({ _id: new ObjectId(id) })
-      expect(mapSpy).toHaveBeenCalledWith(fakeMongoSurvey)
+      expect(mapSpy).not.toHaveBeenCalledWith(fakeMongoSurvey)
       expect(response).toBeNull()
+    })
+  })
+
+  describe('checkById()', () => {
+    it('should return true on success', async () => {
+      const sut = new MongoSurveyRepository()
+      const id = make24HexCharsId()
+      const response = await sut.checkById(id)
+
+      expect(findOneStub).toHaveBeenCalledWith(
+        { _id: new ObjectId(id) },
+        { projection: { _id: 1 } }
+      )
+      expect(mapSpy).not.toHaveBeenCalledWith(fakeMongoSurvey)
+      expect(response).toBe(true)
+    })
+
+    it('should return false if no survey was found by the given id', async () => {
+      const sut = new MongoSurveyRepository()
+      findOneStub.mockResolvedValueOnce(null)
+
+      const id = make24HexCharsId()
+      const response = await sut.checkById(id)
+
+      expect(findOneStub).toHaveBeenCalledWith(
+        { _id: new ObjectId(id) },
+        { projection: { _id: 1 } }
+      )
+      expect(mapSpy).not.toHaveBeenCalledWith(fakeMongoSurvey)
+      expect(response).toBe(false)
     })
   })
 })

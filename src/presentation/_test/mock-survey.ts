@@ -12,3 +12,7 @@ export const mockLoadSurveys = ({ returnValue }: ReturnValue<SurveyModel[]>) => 
 export const mockLoadSurveyById = ({ returnValue }: ReturnValue<SurveyModel>) => ({
   loadById: jest.fn<Promise<SurveyModel|null>, []>(() => Promise.resolve(returnValue))
 })
+
+export const mockCheckSurveyById = () => ({
+  checkById: jest.fn(() => Promise.resolve(true))
+})

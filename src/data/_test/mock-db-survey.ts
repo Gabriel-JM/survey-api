@@ -13,6 +13,10 @@ export const mockLoadSurveyByIdRepository = (fakeDate = new Date()) => ({
   )
 })
 
+export const mockCheckSurveyByIdRepository = () => ({
+  checkById: jest.fn(() => Promise.resolve(true))
+})
+
 export const mockLoadSurveysRepository = ({
   returnValue
 }: ReturnValue<SurveyModel[]>) => ({

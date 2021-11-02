@@ -1,25 +1,23 @@
-import { mockSurveyModel, mockSurveyResultModel } from '@/domain/_test'
+import { mockSurveyResultModel } from '@/domain/_test'
 import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, ok, serverError } from '@/presentation/helpers/http/http-helper'
-import { mockLoadSurveyById, mockLoadSurveyResult } from '@/presentation/_test'
+import { mockCheckSurveyById, mockLoadSurveyResult } from '@/presentation/_test'
 import { LoadSurveyResultController } from './load-survey-result-controller'
 
 const fakeDate = new Date()
 
 function makeSut () {
-  const loadSurveyByIdStub = mockLoadSurveyById({
-    returnValue: mockSurveyModel()
-  })
+  const checkSurveyByIdStub = mockCheckSurveyById()
 
   const loadSurveyResultStub = mockLoadSurveyResult({
     fakeDate
   })
 
-  const sut = new LoadSurveyResultController(loadSurveyByIdStub, loadSurveyResultStub)
+  const sut = new LoadSurveyResultController(checkSurveyByIdStub, loadSurveyResultStub)
 
   return {
     sut,
-    loadSurveyByIdStub,
+    checkSurveyByIdStub,
     loadSurveyResultStub
   }
 }
@@ -30,25 +28,25 @@ describe('LoadSurveyResultController', () => {
     accountId: 'any_account_id'
   }
 
-  it('should call LoadSurveyById with correct value', async () => {
-    const { sut, loadSurveyByIdStub } = makeSut()
+  it('should call CheckSurveyById with correct value', async () => {
+    const { sut, checkSurveyByIdStub } = makeSut()
     await sut.handle(fakeRequest)
 
-    expect(loadSurveyByIdStub.loadById).toHaveBeenCalledWith(fakeRequest.surveyId)
+    expect(checkSurveyByIdStub.checkById).toHaveBeenCalledWith(fakeRequest.surveyId)
   })
 
-  it('should return 403 if LoadSurveyById returns null', async () => {
-    const { sut, loadSurveyByIdStub } = makeSut()
-    loadSurveyByIdStub.loadById.mockResolvedValueOnce(null)
+  it('should return 403 if CheckSurveyById returns false', async () => {
+    const { sut, checkSurveyByIdStub } = makeSut()
+    checkSurveyByIdStub.checkById.mockResolvedValueOnce(false)
 
     const response = await sut.handle(fakeRequest)
 
     expect(response).toEqual(forbidden(new InvalidParamError('surveyId')))
   })
 
-  it('shoudl return 500 if LoadSurveyById throws', async () => {
-    const { sut, loadSurveyByIdStub } = makeSut()
-    loadSurveyByIdStub.loadById.mockImplementationOnce(() => {
+  it('shoudl return 500 if CheckSurveyById throws', async () => {
+    const { sut, checkSurveyByIdStub } = makeSut()
+    checkSurveyByIdStub.checkById.mockImplementationOnce(() => {
       throw new Error()
     })
 

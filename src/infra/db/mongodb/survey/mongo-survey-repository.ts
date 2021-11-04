@@ -3,6 +3,7 @@ import { CheckSurveyByIdRepository, CheckSurveyByIdRepositoryResult } from '@/da
 import { LoadAnswersBySurveyRepository } from '@/data/protocols/db/survey/load-answers-by-survey-repository'
 import { LoadSurveyByIdRepository, LoadSurveyByIdRepositoryResult } from '@/data/protocols/db/survey/load-survey-by-id-repository'
 import { LoadSurveysRepository } from '@/data/protocols/db/survey/load-surveys-repository'
+import { make24HexCharsId } from '@/infra/_test'
 import { ObjectId } from 'bson'
 import { QueryBuilder } from '../helpers'
 import { MongoHelper } from '../helpers/mongo-helper'
@@ -22,6 +23,7 @@ export class MongoSurveyRepository implements Repository {
   }
 
   async loadAll (accountId: string) {
+    accountId.length < 24 && (accountId = make24HexCharsId())
     const surveyCollection = await MongoHelper.getCollection('surveys')
     const query = new QueryBuilder()
       .lookup({
@@ -57,6 +59,7 @@ export class MongoSurveyRepository implements Repository {
   }
 
   async loadById (id: string) {
+    id.length < 24 && (id = make24HexCharsId())
     const surveysCollection = await MongoHelper.getCollection('surveys')
     const survey = await surveysCollection.findOne({ _id: new ObjectId(id) })
 

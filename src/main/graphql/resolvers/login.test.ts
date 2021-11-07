@@ -66,4 +66,43 @@ describe('Login GraphQL', () => {
       expect(response.errors![0].message).toBe('Unauthorized')
     })
   })
+
+  describe('SignUp Mutation', () => {
+    const signUpMutation = gql`
+      mutation signUp (
+        $name: String!,
+        $email: String!,
+        $password: String!,
+        $passwordConfirmation: String!
+      ) {
+        signUp (
+          name: $name,
+          email: $email,
+          password: $password,
+          passwordConfirmation: $passwordConfirmation
+        ) {
+          accessToken
+          name
+        }
+      }
+    `
+
+    it('should return an Account on valid credentials', async () => {
+      const { mutate } = createTestClient({ apolloServer })
+      const response = await mutate<{ signUp: Record<'accessToken' | 'name', string> }>(
+        signUpMutation,
+        {
+          variables: {
+            name: 'Gabriel José',
+            email: 'email@mail.com',
+            password: '123',
+            passwordConfirmation: '123'
+          }
+        }
+      )
+
+      expect(response.data?.signUp.accessToken).toBeTruthy()
+      expect(response.data?.signUp.name).toBe('Gabriel José')
+    })
+  })
 })

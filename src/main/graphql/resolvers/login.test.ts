@@ -104,5 +104,30 @@ describe('Login GraphQL', () => {
       expect(response.data?.signUp.accessToken).toBeTruthy()
       expect(response.data?.signUp.name).toBe('Gabriel José')
     })
+
+    it('should return an EmailInUseError on duplicated email', async () => {
+      const password = await bcrypt.hash('123', 12)
+      await accountCollection.insertOne({
+        name: 'Gabriel José',
+        email: 'email@mail.com',
+        password
+      })
+
+      const { mutate } = createTestClient({ apolloServer })
+      const response = await mutate<{ signUp: Record<'accessToken' | 'name', string> }>(
+        signUpMutation,
+        {
+          variables: {
+            name: 'Gabriel José',
+            email: 'email@mail.com',
+            password: '123',
+            passwordConfirmation: '123'
+          }
+        }
+      )
+
+      expect(response.data).toBeNull()
+      expect(response.errors![0].message).toBe('Provided Email is already in use')
+    })
   })
 })

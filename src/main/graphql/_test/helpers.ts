@@ -5,7 +5,8 @@ import typeDefs from '../type-defs'
 export async function makeApolloServer () {
   const server = new ApolloServer({
     resolvers,
-    typeDefs
+    typeDefs,
+    context: ({ req }) => ({ req })
   })
 
   await server.start()

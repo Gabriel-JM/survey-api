@@ -39,7 +39,8 @@ export default (app: Express) => {
       requestDidStart: () => Promise.resolve({
         willSendResponse: ({ response, errors }) => Promise.resolve(handleErrors(response, errors))
       }) as Promise<GraphQLRequestListener<BaseContext>>
-    }]
+    }],
+    context: ({ req }) => ({ req })
   })
 
   apolloServer.start()

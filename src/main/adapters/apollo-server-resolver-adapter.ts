@@ -2,8 +2,13 @@ import { Controller } from '@/presentation/protocols'
 import { ApolloError, AuthenticationError, ForbiddenError, UserInputError } from 'apollo-server-errors'
 
 export function adaptResolver (controller: Controller) {
-  return async (_parent: any, args: any = {}) => {
-    const httpResponse = await controller.handle(args)
+  return async (_parent: any, args = {}, context: any) => {
+    const request = {
+      ...args,
+      accountId: context?.req?.accountId
+    }
+
+    const httpResponse = await controller.handle(request)
 
     switch (httpResponse.statusCode) {
       case 200:

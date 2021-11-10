@@ -43,9 +43,7 @@ jest.mock('../helpers/mongo-helper', () => {
 
     connect: jest.fn(),
 
-    getCollection: jest.fn(async () => {
-      return await Promise.resolve(collectionStub('surveys'))
-    }),
+    getCollection: jest.fn(() => collectionStub('surveys')),
 
     map <T = any>(data: any) {
       const { _id, ...dataWithoutId } = data

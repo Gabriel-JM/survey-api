@@ -15,7 +15,7 @@ async function makeAccessToken () {
     password: '123'
   })
 
-  const id = res.ops[0]._id
+  const id = res.insertedId
   const accessToken = sign({ id }, env.jwtSecret)
 
   await accountCollection.updateOne({ _id: id }, {
@@ -47,10 +47,10 @@ describe('Survey Routes', () => {
   })
 
   beforeEach(async () => {
-    surveyCollection = await MongoHelper.getCollection('surveys')
+    surveyCollection = MongoHelper.getCollection('surveys')
     await surveyCollection.deleteMany({})
 
-    accountCollection = await MongoHelper.getCollection('accounts')
+    accountCollection = MongoHelper.getCollection('accounts')
     await accountCollection.deleteMany({})
   })
 
@@ -82,7 +82,7 @@ describe('Survey Routes', () => {
         role: 'admin'
       })
 
-      const id = res.ops[0]._id
+      const id = res.insertedId
       const accessToken = sign({ id }, env.jwtSecret)
 
       await accountCollection.updateOne({ _id: id }, {

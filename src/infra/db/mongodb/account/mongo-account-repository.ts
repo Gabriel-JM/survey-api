@@ -13,7 +13,7 @@ type AccountRepository = AddAccountRepository
 
 export class MongoAccountRepository implements AccountRepository {
   async loadByEmail (email: string): Promise<LoadAccountByEmailRepositoryResult> {
-    const accountsCollection = await MongoHelper.getCollection('accounts')
+    const accountsCollection = MongoHelper.getCollection('accounts')
     const account = await accountsCollection.findOne(
       { email },
       {
@@ -31,7 +31,7 @@ export class MongoAccountRepository implements AccountRepository {
   }
 
   async checkByEmail (email: string): Promise<CheckAccountByEmailRepositoryResult> {
-    const accountsCollection = await MongoHelper.getCollection('accounts')
+    const accountsCollection = MongoHelper.getCollection('accounts')
     const account = await accountsCollection.findOne(
       { email },
       {
@@ -45,7 +45,7 @@ export class MongoAccountRepository implements AccountRepository {
   }
 
   async loadByToken (token: string, role?: string): Promise<LoadAccountByTokenRepositoryResult> {
-    const accountsCollection = await MongoHelper.getCollection('accounts')
+    const accountsCollection = MongoHelper.getCollection('accounts')
     const account = await accountsCollection.findOne({
       accessToken: token,
       $or: [{ role }, { role: 'admin' }]
@@ -59,16 +59,16 @@ export class MongoAccountRepository implements AccountRepository {
   }
 
   async add (accountData: AddAccountRespositoryParams): Promise<AddAccountRepositoryResult> {
-    const accountsCollection = await MongoHelper.getCollection('accounts')
+    const accountsCollection = MongoHelper.getCollection('accounts')
     const operationResult = await accountsCollection.insertOne(accountData)
 
-    const [account] = operationResult.ops
+    const { insertedId } = operationResult
 
-    return account !== null
+    return insertedId !== null
   }
 
   async updateAccessToken (id: string, token: string): Promise<void> {
-    const accountsCollection = await MongoHelper.getCollection('accounts')
+    const accountsCollection = MongoHelper.getCollection('accounts')
     await accountsCollection.updateOne({ _id: id }, {
       $set: {
         accessToken: token

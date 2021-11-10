@@ -18,13 +18,13 @@ type Repository = (
 
 export class MongoSurveyRepository implements Repository {
   async add (survey: AddSurveyRepositoryParams): Promise<void> {
-    const surveyCollection = await MongoHelper.getCollection('surveys')
+    const surveyCollection = MongoHelper.getCollection('surveys')
     await surveyCollection.insertOne(survey)
   }
 
   async loadAll (accountId: string) {
     accountId.length < 24 && (accountId = make24HexCharsId())
-    const surveyCollection = await MongoHelper.getCollection('surveys')
+    const surveyCollection = MongoHelper.getCollection('surveys')
     const query = new QueryBuilder()
       .lookup({
         from: 'surveyResults',
@@ -60,7 +60,7 @@ export class MongoSurveyRepository implements Repository {
 
   async loadById (id: string) {
     id.length < 24 && (id = make24HexCharsId())
-    const surveysCollection = await MongoHelper.getCollection('surveys')
+    const surveysCollection = MongoHelper.getCollection('surveys')
     const survey = await surveysCollection.findOne({ _id: new ObjectId(id) })
 
     return survey
@@ -69,7 +69,7 @@ export class MongoSurveyRepository implements Repository {
   }
 
   async loadAnswers (id: string) {
-    const surveysCollection = await MongoHelper.getCollection('surveys')
+    const surveysCollection = MongoHelper.getCollection('surveys')
     const query = new QueryBuilder()
       .match({ _id: new ObjectId(id) })
       .project({
@@ -84,7 +84,7 @@ export class MongoSurveyRepository implements Repository {
   }
 
   async checkById (id: string): Promise<CheckSurveyByIdRepositoryResult> {
-    const surveysCollection = await MongoHelper.getCollection('surveys')
+    const surveysCollection = MongoHelper.getCollection('surveys')
     const survey = await surveysCollection.findOne(
       { _id: new ObjectId(id) },
       { projection: { _id: 1 } }

@@ -15,7 +15,7 @@ async function makeAccessToken () {
     password: '123'
   })
 
-  const id = res.ops[0]._id
+  const id = res.insertedId
   const accessToken = sign({ id }, env.jwtSecret)
 
   await accountCollection.updateOne({ _id: id }, {
@@ -47,10 +47,10 @@ describe('Login Routes', () => {
   })
 
   beforeEach(async () => {
-    surveyCollection = await MongoHelper.getCollection('surveys')
+    surveyCollection = MongoHelper.getCollection('surveys')
     await surveyCollection.deleteMany({})
 
-    accountCollection = await MongoHelper.getCollection('accounts')
+    accountCollection = MongoHelper.getCollection('accounts')
     await accountCollection.deleteMany({})
   })
 
@@ -81,7 +81,7 @@ describe('Login Routes', () => {
       const accessToken = await makeAccessToken()
 
       await request(app)
-        .put(`/api/surveys/${res.ops[0]._id as string}/results`)
+        .put(`/api/surveys/${res.insertedId.toHexString()}/results`)
         .set('x-access-token', accessToken)
         .send({
           answer: 'any_answer'
@@ -110,7 +110,7 @@ describe('Login Routes', () => {
       const accessToken = await makeAccessToken()
 
       await request(app)
-        .get(`/api/surveys/${res.ops[0]._id as string}/results`)
+        .get(`/api/surveys/${res.insertedId.toHexString()}/results`)
         .set('x-access-token', accessToken)
         .expect(200)
     })

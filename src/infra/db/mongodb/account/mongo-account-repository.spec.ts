@@ -46,8 +46,8 @@ jest.mock('../helpers/mongo-helper', () => {
 
     connect: jest.fn(),
 
-    getCollection: jest.fn(async (collectionName) => {
-      return await Promise.resolve(collectionStub(collectionName))
+    getCollection: jest.fn((collectionName) => {
+      return collectionStub(collectionName)
     }),
 
     map: jest.fn(() => fakeMongoAccount)

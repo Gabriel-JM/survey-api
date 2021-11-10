@@ -37,10 +37,10 @@ const toArrayStub = jest.fn<Promise<SurveyResultModel[] | null>, []>(
 
 const getCollectionSpy = jest.spyOn(MongoHelper, 'getCollection')
 getCollectionSpy.mockImplementation(() => {
-  return Promise.resolve({
+  return {
     findOneAndUpdate: findOneAndUpdateStub,
     aggregate: () => ({ toArray: toArrayStub })
-  }) as unknown as Promise<Collection>
+  } as unknown as Collection
 })
 
 describe('Mongo survey result repository', () => {

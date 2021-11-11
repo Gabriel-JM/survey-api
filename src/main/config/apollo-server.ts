@@ -1,7 +1,8 @@
+import { makeExecutableSchema } from '@graphql-tools/schema'
 import { ApolloServer } from 'apollo-server-express'
-import { GraphQLRequestListener, BaseContext } from 'apollo-server-plugin-base'
 import { Express } from 'express'
 import { GraphQLError } from 'graphql'
+import { authDirectiveTransformer } from '../graphql/directive/auth'
 import resolvers from '../graphql/resolvers'
 import typeDefs from '../graphql/type-defs'
 
@@ -31,14 +32,20 @@ function checkError (error: GraphQLError, errorName: string) {
   return [error.name, error.originalError?.name].some(name => name === errorName)
 }
 
+let schema = makeExecutableSchema({
+  resolvers,
+  typeDefs
+})
+
+schema = authDirectiveTransformer(schema)
+
 export default (app: Express) => {
   const apolloServer = new ApolloServer({
-    resolvers,
-    typeDefs,
+    schema,
     plugins: [{
-      requestDidStart: () => Promise.resolve({
-        willSendResponse: ({ response, errors }) => Promise.resolve(handleErrors(response, errors))
-      }) as Promise<GraphQLRequestListener<BaseContext>>
+      requestDidStart: async () => ({
+        willSendResponse: async ({ response, errors }) => handleErrors(response, errors)
+      })
     }],
     context: ({ req }) => ({ req })
   })
